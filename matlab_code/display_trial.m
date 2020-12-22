@@ -118,8 +118,9 @@ for file = 1:length(hdf5_files)
 end
 posx = h5read(hd5f_file_to_read,'/posx');
 posy = h5read(hd5f_file_to_read,'/posy');
-time = linspace(1,1000,length(posx));
-scatter(posx,posy,0.5,time)
+time = h5read(hd5f_file_to_read,'/time');
+ball_radius = 4.5; %we need to scale the variables by the ball radius for the true position
+scatter(ball_radius*posx,ball_radius*posy,4.5,time)
 colorbar
 title('Fly trajectory');
 %axis equal

@@ -9,6 +9,7 @@ from Phidget22.Devices.VoltageOutput import *
 import numpy as np
 from h5_logger import H5Logger
 import random
+import math
 
 
 class SocketClientGainChange(object):
@@ -63,7 +64,9 @@ class SocketClientGainChange(object):
 
         self.done = False
 
-        self.gain_yaw = random.choice = ([-1,1]) #randomly choose which gain to start with
+        self.gain_yaw = int(random.choice([-1,1])) #randomly choose which gain to start with
+        self.gain_change = True
+        self.heading_with_gain = 0
 
         #set up logger to save hd5f file
         self.logger = H5Logger(
@@ -74,7 +77,7 @@ class SocketClientGainChange(object):
         )
 
 
-    def run(self, block_duration = 200):
+    def run(self, block_duration = 20):
 
         # UDP
         # Open the connection (ctrl-c / ctrl-break to quit)
@@ -138,15 +141,21 @@ class SocketClientGainChange(object):
 
                     # Set analog output voltage YAW_gain
                     #set yaw gain depending on how much time has elapsed
-                    if (self.time_elapsed%block_duration)==0:
+                    if ((self.time_elapsed > 1) and ((math.floor(self.time_elapsed)%block_duration)==0) and (self.gain_change == True)):
                         if self.gain_yaw == 1:
-                            self. gain_yaw = -1
+                            self.gain_yaw = -1
+                            self.gain_change = False
                         else:
                             self.gain_yaw = 1
+                            self.gain_change = False
 
-                    self.heading_with_gain = (self.heading + self.deltaheading*self.gain_yaw) % 360
-                    output_voltage_yaw_gain = (self.heading_with_gain)*(self.aout_max_volt-self.aout_min_volt)/360
-                    self.aout_yaw.setVoltage(output_voltage_yaw_gain) 
+                    #reset self.gain_change 1 sec before the gain change
+                    if (((math.floor(self.time_elapsed+1)%block_duration)==0) and (self.gain_change == False)):
+                        self.gain_change = True
+
+                    self.heading_with_gain = (self.heading_with_gain + self.deltaheading*self.gain_yaw) % (2*np.pi)
+                    output_voltage_yaw_gain = (self.heading_with_gain)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
+                    self.aout_yaw.setVoltage(10-output_voltage_yaw_gain) 
 
 
                     # Set analog output voltage Y
@@ -163,7 +172,8 @@ class SocketClientGainChange(object):
                         print('frame:  {0}'.format(self.frame))
                         print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
                         print('gain yaw: {0}'.format(self.gain_yaw))
-                        print('yaw:   {0:1.3f}'.format(self.heading))                   
+                        print('gain change: {0}'.format(self.gain_change))
+                        print('yaw:   {0:1.3f}'.format(self.heading*360/(2*np.pi)))                   
                         print('volt:   {0:1.3f}'.format(output_voltage_yaw_gain))
                         print('int x:   {0:1.3f}'.format(wrapped_intx))
                         print('volt:   {0:1.3f}'.format(output_voltage_x))
@@ -188,5 +198,9 @@ class SocketClientGainChange(object):
                 'posy': self.posy,
                 'intx': self.intx,
                 'inty': self.inty,
+                'heading': self.heading,
+                'heading_with_gain': self.heading_with_gain,
+                'deltaheading': self.deltaheading,
+                'gain_yaw': self.gain_yaw
             }
             self.logger.add(log_data)

@@ -1,7 +1,7 @@
 function [ trial_data, trial_time ] = run_panels_trial(tid, task, run_obj, scanimage_client, trial_core_name )
 
 %Move to the folder with the python code
-cd('C:\src\experimental_code\python_code');
+cd('C:\src\2P_experimental_code\python_code');
 
 % Currently v2
 disp(['About to start trial task: ' task]);
@@ -83,8 +83,11 @@ end
 Panel_com('start');
 
 %Run the python script that runs fictrac and other experimental conditions
-system(['python run_socket_client.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
-
+if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
+    system(['python run_socket_client.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+elseif (strcmp(run_obj.experiment_type,'Gain_change')==1)
+    system(['python run_socket_client_gain_change.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);    
+end
 %Start the data acquisition
 [trial_data, trial_time] = s.startForeground(); %gets data and timestamps for the NiDaq acquisition
 

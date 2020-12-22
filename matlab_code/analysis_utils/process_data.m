@@ -28,7 +28,7 @@ vel_yaw = smoothed.angularVel;
 
 %Get position and time data
 panels = trial_data( :, settings.panels_x_DAQ_AI ); %data from the x dimension in panels
-fly_pos = smoothed.angularPosition;
+fly_pos = smoothed.degAngularPosition;
 [stim_pos] = process_panel_360(panels, num_x_pixels); %returns filtered and downsampled panel px data as well as calculated angle of the bar
 [ t ] = resample(trial_time, 25, settings.sampRate); %downsamples the time
 
