@@ -133,7 +133,7 @@ class SocketClient(object):
 
 
                     # Set analog output voltage YAW
-                    output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/360
+                    output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
                     self.aout_yaw.setVoltage(output_voltage_yaw) 
 
 
@@ -150,7 +150,7 @@ class SocketClient(object):
                     if self.print:
                         print('frame:  {0}'.format(self.frame))
                         print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
-                        print('yaw:   {0:1.3f}'.format(self.heading))                   
+                        print('yaw:   {0:1.3f}'.format(self.heading*360/(2*np.pi)))                   
                         print('volt:   {0:1.3f}'.format(output_voltage_yaw))
                         print('int x:   {0:1.3f}'.format(wrapped_intx))
                         print('volt:   {0:1.3f}'.format(output_voltage_x))
@@ -175,5 +175,6 @@ class SocketClient(object):
                 'posy': self.posy,
                 'intx': self.intx,
                 'inty': self.inty,
+                'heading': self.heading
             }
             self.logger.add(log_data)
