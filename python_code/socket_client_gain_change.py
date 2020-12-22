@@ -77,7 +77,7 @@ class SocketClientGainChange(object):
         )
 
 
-    def run(self, block_duration = 20):
+    def run(self, block_duration = 200):
 
         # UDP
         # Open the connection (ctrl-c / ctrl-break to quit)
