@@ -120,15 +120,12 @@ posx = h5read(hd5f_file_to_read,'/posx');
 posy = h5read(hd5f_file_to_read,'/posy');
 time = h5read(hd5f_file_to_read,'/time');
 ball_radius = 4.5; %we need to scale the variables by the ball radius for the true position
-if (str_cmp(run_obj.experiment_type,'Gain_change')==1) %if it's a gain change experiment
-    gain = h5read(hd5f_file_to_read,'/gain_yaw');
-    scatter(ball_radius*posx,ball_radius*posy,4.5,gain) %color according to the gain
-else
-    scatter(ball_radius*posx,ball_radius*posy,4.5,time)
-end
+if (str_cmp(run_obj.experiment_type,'Gain_change
+scatter(ball_radius*posx,ball_radius*posy,4.5,time)
 colorbar
 title('Fly trajectory');
-
+%axis equal
+%axis tight
 
 %% Update the session figure
 
