@@ -1,7 +1,8 @@
 function [ trial_data, trial_time ] = run_panels_trial(tid, task, run_obj, scanimage_client, trial_core_name )
 
 %Move to the folder with the python code
-cd('C:\src\2P_experimental_code\python_code');
+setup = get_setup_info(run_obj.set_up);
+cd(setup.python_path);
 
 % Currently v2
 disp(['About to start trial task: ' task]);
