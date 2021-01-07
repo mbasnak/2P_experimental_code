@@ -16,8 +16,9 @@ if strcmp(setup_name, '2P-room')
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
     end
-    aI(9) = s.addAnalogInputChannel('Dev1', 12, 'Voltage'); % piezo Z
-    aI(9).InputType = 'SingleEnded';    
+    aI(9) = s.addAnalogInputChannel('Dev1', 12, 'Voltage');
+    aI(9).InputType = 'SingleEnded';
+    
     
     % Input channels:
     %
@@ -39,14 +40,17 @@ if strcmp(setup_name, '2P-room')
     %
     
 elseif strcmp(setup_name, 'WLI-TOBIN')
-    s = daq.createSession('ni');
+    s = daq('ni');
 
     %add analog input channels
-    ai_channels_used = 1:4;
-    aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
+    ai_channels_used = [1:3,11:15];
+    aI = s.addAnalogInputChannel('Dev3', ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
     end
+    aI(9) = s.addAnalogInputChannel('Dev1', 12, 'Voltage');
+    aI(9).InputType = 'SingleEnded';
+
 else
     error('Choose 2P-room or WLI-TOBIN')
 end
