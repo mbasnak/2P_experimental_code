@@ -1,8 +1,16 @@
+#!/usr/bin/env python3
+
 """
 commented by Tatsuo Okubo
 2021/01/07
+
+The first line makes this code an executable script
+It uses the operating system env comand to search Python in the PATH env variable.
 """
-#!/usr/bin/env python3
+
+
+# currently using PhidgetAnalog 4-Output (10002_0B)
+# https://www.phidgets.com/?view=api&product_id=1002_0&lang=Python
 
 #import relevant modules
 import socket  # for establishing connection with FicTrac 
@@ -16,6 +24,7 @@ from h5_logger import H5Logger
 
 class SocketClient(object):
 
+	# class variable shared across all instances
     DefaultParam = {
         'experiment': 1,
         'experiment_time': 30,
@@ -30,7 +39,7 @@ class SocketClient(object):
         self.param = param
         self.experiment = self.param['experiment']
         self.experiment_time = self.param['experiment_time']
-        self.time_start = time.time()
+        self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
 
 
         # Set up Phidget channels
@@ -41,9 +50,9 @@ class SocketClient(object):
         self.aout_min_volt = 0.0
 
         # Setup analog output X
-        self.aout_x = VoltageOutput()
+        self.aout_x = VoltageOutput()  # VoltageOutput class controls the variable DC voltage output
         self.aout_x.setChannel(self.aout_channel_x)
-        self.aout_x.openWaitForAttachment(5000)
+        self.aout_x.openWaitForAttachment(5000)  # waits for a defined amount of time [ms]
         self.aout_x.setVoltage(0.0)
 
         # Setup analog output YAW
@@ -58,7 +67,7 @@ class SocketClient(object):
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(0.0)
 
-        self.print = True;
+        self.print = True;  # whether to print status to the console
 
         # Set up socket info
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
@@ -94,7 +103,7 @@ class SocketClient(object):
                 # Only try to receive data if there is data waiting
                 if ready[0]:
                     # Receive one data frame
-                    new_data = sock.recv(1024)
+                    new_data = sock.recv(1024)  # 1024: maximum amount of data received at once
             
                     # Uh oh?
                     if not new_data:
@@ -102,6 +111,7 @@ class SocketClient(object):
             
                     # Decode received data
                     data += new_data.decode('UTF-8')
+                    
                     #get time
                     time_now = time.time() 
                     self.time_elapsed = time_now - self.time_start
@@ -121,30 +131,29 @@ class SocketClient(object):
             
                     # Extract FicTrac variables
                     # (see https://github.com/rjdmoore/fictrac/blob/master/doc/data_header.txt for descriptions)
-                    self.frame = int(toks[1])
-                    self.posx = float(toks[15])
-                    self.posy = float(toks[16])
-                    self.heading = float(toks[17])
-                    self.intx = float(toks[20])
-                    self.inty = float(toks[21])
-                    self.timestamp = float(toks[22])
+                    self.frame = int(toks[1])  # frame counter
+                    self.posx = float(toks[15])  # integrated x position (rad)
+                    self.posy = float(toks[16])  # integrated y position (rad)
+                    self.heading = float(toks[17])  # integrated animal heading (rad)
+                    self.intx = float(toks[20])  # integrated forward position neglecting heading (rad)
+                    self.inty = float(toks[21])  # integrated side positino neglecting heading (rad)
+                    self.timestamp = float(toks[22])  # position in video file (ms0)
 
-                    #Set Phidget voltages using FicTrac data
+                    # Set Phidget voltages using FicTrac data
                     # Set analog output voltage X
-                    wrapped_intx = (self.intx % (2 * np.pi))
+                    wrapped_intx = (self.intx % (2 * np.pi))  # take the remainder
                     output_voltage_x = wrapped_intx * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_x.setVoltage(output_voltage_x)
 
 
                     # Set analog output voltage YAW
-                    output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
+                    output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
                     self.aout_yaw.setVoltage(output_voltage_yaw) 
 
 
                     # Set analog output voltage Y
                     wrapped_inty = self.inty % (2 * np.pi)
-                    output_voltage_y = wrapped_inty * (self.aout_max_volt - self.aout_min_volt) / (
-                                2 * np.pi)
+                    output_voltage_y = wrapped_inty * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_y.setVoltage(output_voltage_y)
 
                     # Save data in log file
@@ -162,6 +171,7 @@ class SocketClient(object):
                         print('volt:   {0:1.3f}'.format(output_voltage_y))
                         print()
 
+                    # end experiment after the elapsed time has exceeded the specified time
                     if self.time_elapsed > self.experiment_time:
                         self.done = True
                         break
