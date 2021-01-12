@@ -17,7 +17,7 @@ s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 total_duration = run_obj.trial_t; %trial duration taken from the GUI input
 
 %% prepare scanimage
-if strcmp(setup_name, '2P-room')
+if strcmp(run_obj.set_up, '2P-room')
     %pre-allocate output data (imaging trigger)
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
     imaging_trigger(2:end-1) = 1.0;
@@ -41,12 +41,12 @@ cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename 
 hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 
 %% start the trial
-start = run_obj.start_pos;
-if ( strcmp(task, 'Closed_Loop') == 1 )
-    closedLoop(run_obj.pattern_number, start);
-elseif ( strcmp(task, 'Open_Loop') == 1 )
-    openLoop(run_obj.pattern_number, run_obj.function_number);
-end
+% start = run_obj.start_pos;
+% if ( strcmp(task, 'Closed_Loop') == 1 )
+%     closedLoop(run_obj.pattern_number, start);
+% elseif ( strcmp(task, 'Open_Loop') == 1 )
+%     openLoop(run_obj.pattern_number, run_obj.function_number);
+% end
 
 %Run the python script that runs fictrac and other experimental conditions
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
