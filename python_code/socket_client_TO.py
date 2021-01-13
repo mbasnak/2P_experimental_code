@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #import relevant modules
-import socket
+import socket  # for delegating the task of listening to the socket to the OS
 import select
 import time
 import datetime
@@ -28,7 +28,7 @@ class SocketClient(object):
         self.param = param
         self.experiment = self.param['experiment']
         self.experiment_time = self.param['experiment_time']
-        self.time_start = time.time()
+        self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
 
 
         # Set up Phidget channels
@@ -93,21 +93,33 @@ class SocketClient(object):
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock,\
          serial.Serial(self.COM, self.baudrate, timeout=self.serialTimeout) as ser, \
          open(self.file_name, mode='w') as f:
-            sock.bind((self.HOST, self.PORT))
-            sock.setblocking(0)
+            sock.bind((self.HOST, self.PORT))  # takes one argument, give it as a tuple
+            sock.setblocking(False)  # make it non-blocking
     
             # Keep receiving data until FicTrac closes
             data = ""
             timeout_in_seconds = 1
 
             while not self.done:
-                # Check to see whether there is data waiting
-                ready = select.select([sock], [], [], timeout_in_seconds)
+
+                # display most recent message from Arduino if available
+                #msg = ser.readline()
+                #motor_pos = msg[:-2]  # remove \r and \n
+                #while len(msg) > 0:  # keep on reading until the message form Arduino is empty
+                #    motor_pos = msg[:-2]  # remove \r and \n
+                #    msg = ser.readline()
+
+                #print("message from Arduino: ", msg)
+                
+                # ask the OS whether the socket is readable
+                # give 3 lists of sockets for reading, writing, and checking for errors; we only care about the first one
+                # https://docs.python.org/3/howto/sockets.html#socket-programming-howto
+                ready = select.select([sock], [], [], timeout_in_seconds)  # returns the subset of sockets that are actually readable
     
                 # Only try to receive data if there is data waiting
                 if ready[0]:
                     # Receive one data frame
-                    new_data = sock.recv(1024)
+                    new_data = sock.recv(1024)  # buffer size, should be a relatively small power of 2
             
                     # Uh oh?
                     if not new_data:
@@ -117,7 +129,7 @@ class SocketClient(object):
                     data += new_data.decode('UTF-8')
                     #get time
                     time_now = time.time() 
-                    self.time_elapsed = time_now - self.time_start
+                    self.time_elapsed = time_now - self.time_start  # (s)
             
                     # Find the first frame of data
                     endline = data.find("\n")
@@ -150,11 +162,11 @@ class SocketClient(object):
                     
                     # receive motor position from Arduino
                     msg = ser.readline()
-                    motor_pos = msg[:-2]  # remove \n
+                    motor_pos = msg[:-2]  # remove \r and \n
                     print(str(animal_heading_360) + ", " + str(motor_pos, 'utf-8'))
 
                     # write Arduino ouptut to log file
-                    log = str(self.frame) + "," + str(animal_heading_360) + "," + str(motor_pos, 'utf-8') + "\n"
+                    log = str(self.time_elapsed) + "," + str(self.frame) + "," + str(animal_heading_360) + "," + str(motor_pos, 'utf-8') + "\n"
                     f.writelines(log)
 
                     #Set Phidget voltages using FicTrac data
@@ -178,9 +190,9 @@ class SocketClient(object):
 
                     # Display status message
                     if self.print:
-                        print('frame:  {0}'.format(self.frame))
-                        print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
-                        print('yaw:   {0:1.3f}'.format(animal_heading_360))                  
+                        #print('frame:  {0}'.format(self.frame))
+                        #print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
+                        #print('yaw:   {0:1.3f}'.format(animal_heading_360))                  
                         #print('volt:   {0:1.3f}'.format(output_voltage_yaw))
                         #print('int x:   {0:1.3f}'.format(wrapped_intx))
                         #print('volt:   {0:1.3f}'.format(output_voltage_x))
