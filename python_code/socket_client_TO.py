@@ -4,6 +4,7 @@
 import socket
 import select
 import time
+import datetime
 from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageOutput import *
 import serial
@@ -61,12 +62,18 @@ class SocketClient(object):
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
         self.PORT = 65432         # The (receiving) host port (sock_port)
 
-
         # Set up Arduino connection
         self.COM = 'COM6'  # serial port
         self.baudrate = 115200  # 9600
         self.serialTimeout = 0.001 # blocking timeout for readline()
 
+        # specify the file for logging the data from Arduino
+        self.file_path = "C:\\Users\\Tots\\Documents\\Python\\CLwind\\log\\"
+        now = datetime.datetime.now()
+        date_str = now.strftime("%Y%m%d_%H%M%S")
+        self.file_name = self.file_path + date_str + ".csv"
+
+        # flag for indicating when the trial is done
         self.done = False
 
         #set up logger to save hd5f file
@@ -80,9 +87,12 @@ class SocketClient(object):
 
     def run(self, gain_x = 1):
 
-        # UDP
-        # Open the connection (ctrl-c / ctrl-break to quit)
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock, serial.Serial(self.COM, self.baudrate, timeout=self.serialTimeout) as ser:
+        # connect to socket via UDP, not TCP!
+        # connect to Arduino via serial
+        # open file for logging Arduino outputs
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock,\
+         serial.Serial(self.COM, self.baudrate, timeout=self.serialTimeout) as ser, \
+         open(self.file_name, mode='w') as f:
             sock.bind((self.HOST, self.PORT))
             sock.setblocking(0)
     
@@ -133,7 +143,7 @@ class SocketClient(object):
                     self.timestamp = float(toks[22])
 
                     # send the heading signal to Arduino
-                    animal_heading_360 = int(self.heading * (180 / np.pi))  # convert from rad to deg
+                    animal_heading_360 = int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
                     arduino_str = "H " + str(animal_heading_360) + "\n"  # "H is a command used in the Arduino code to indicate heading
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                     ser.write(arduino_byte)  # send to serial port  
@@ -143,17 +153,19 @@ class SocketClient(object):
                     motor_pos = msg[:-2]  # remove \n
                     print(str(animal_heading_360) + ", " + str(motor_pos, 'utf-8'))
 
+                    # write Arduino ouptut to log file
+                    log = str(self.frame) + "," + str(animal_heading_360) + "," + str(motor_pos, 'utf-8') + "\n"
+                    f.writelines(log)
+
                     #Set Phidget voltages using FicTrac data
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))
                     output_voltage_x = wrapped_intx * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_x.setVoltage(output_voltage_x)
 
-
                     # Set analog output voltage YAW
                     output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
                     self.aout_yaw.setVoltage(output_voltage_yaw) 
-
 
                     # Set analog output voltage Y
                     wrapped_inty = self.inty % (2 * np.pi)
@@ -168,12 +180,12 @@ class SocketClient(object):
                     if self.print:
                         print('frame:  {0}'.format(self.frame))
                         print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
-                        print('yaw:   {0:1.3f}'.format(self.heading*360/(2*np.pi)))                   
-                        print('volt:   {0:1.3f}'.format(output_voltage_yaw))
-                        print('int x:   {0:1.3f}'.format(wrapped_intx))
-                        print('volt:   {0:1.3f}'.format(output_voltage_x))
-                        print('int y:   {0:1.3f}'.format(wrapped_inty))
-                        print('volt:   {0:1.3f}'.format(output_voltage_y))
+                        print('yaw:   {0:1.3f}'.format(animal_heading_360))                  
+                        #print('volt:   {0:1.3f}'.format(output_voltage_yaw))
+                        #print('int x:   {0:1.3f}'.format(wrapped_intx))
+                        #print('volt:   {0:1.3f}'.format(output_voltage_x))
+                        #print('int y:   {0:1.3f}'.format(wrapped_inty))
+                        #print('volt:   {0:1.3f}'.format(output_voltage_y))
                         print()
 
                     if self.time_elapsed > self.experiment_time:
