@@ -67,11 +67,14 @@ class SocketClient(object):
         self.baudrate = 115200  # 9600
         self.serialTimeout = 0.001 # blocking timeout for readline()
 
-        # specify the file for logging the data from Arduino
+        # log for Arduino
         self.file_path = "C:\\Users\\Tots\\Documents\\Python\\CLwind\\log\\"
         now = datetime.datetime.now()
         date_str = now.strftime("%Y%m%d_%H%M%S")
-        self.file_name = self.file_path + date_str + ".csv"
+        self.file_name_arduino = self.file_path + date_str + "_arduino.csv"
+
+        # log for FicTrac
+        self.file_name_fictrac = self.file_path + date_str + "_fictrac.csv"
 
         # flag for indicating when the trial is done
         self.done = False
@@ -92,7 +95,8 @@ class SocketClient(object):
         # open file for logging Arduino outputs
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock,\
          serial.Serial(self.COM, self.baudrate, timeout=self.serialTimeout) as ser, \
-         open(self.file_name, mode='w') as f:
+         open(self.file_name_arduino, mode='w') as f_arduino, \
+         open(self.file_name_fictrac, mode='w') as f_fictrac:
             sock.bind((self.HOST, self.PORT))  # takes one argument, give it as a tuple
             sock.setblocking(False)  # make it non-blocking
     
@@ -100,22 +104,16 @@ class SocketClient(object):
             data = ""
             timeout_in_seconds = 1
 
-            while not self.done:
+            while not self.done:  # main loop
 
-                msg = ser.readline()
-                motor_pos = msg[:-2]  # remove \r and \n
-                print(str(animal_heading_360) + ", " + str(motor_pos, 'utf-8'))
-
-                # write to Arduino log here
+                # listening to Arduino
+                msg = ser.readline()  # read from serial
+                if len(msg) > 0:
+                    motor_pos = msg[:-2]  # remove \r and \n
+                    time_now = time.time() 
                 
-                # display most recent message from Arduino if available
-                #msg = ser.readline()
-                #motor_pos = msg[:-2]  # remove \r and \n
-                #while len(msg) > 0:  # keep on reading until the message form Arduino is empty
-                #    motor_pos = msg[:-2]  # remove \r and \n
-                #    msg = ser.readline()
-
-                #print("message from Arduino: ", msg)
+                    log_arduino = str("{:.7f}".format(time_now)) + "," + str(motor_pos, 'utf-8') + "\n"
+                    f_arduino.writelines(log_arduino)
                 
                 # ask the OS whether the socket is readable
                 # give 3 lists of sockets for reading, writing, and checking for errors; we only care about the first one
@@ -165,15 +163,11 @@ class SocketClient(object):
                     arduino_str = "H " + str(animal_heading_360) + "\n"  # "H is a command used in the Arduino code to indicate heading
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                     ser.write(arduino_byte)  # send to serial port  
-                    
-                    # receive motor position from Arduino
-                    #msg = ser.readline()
-                    #motor_pos = msg[:-2]  # remove \r and \n
-                    #print(str(animal_heading_360) + ", " + str(motor_pos, 'utf-8'))
 
-                    # write Arduino ouptut to log file
-                    log = str(self.time_elapsed) + "," + str(self.frame) + "," + str(animal_heading_360) + "," + str(motor_pos, 'utf-8') + "\n"
-                    f.writelines(log)
+                    # write to FicTrac log file
+                    time_now = time.time()
+                    log_fictrac = str("{:.7f}".format(time_now)) + "," + str(animal_heading_360) + "\n"
+                    f_fictrac.writelines(log_fictrac)
 
                     #Set Phidget voltages using FicTrac data
                     # Set analog output voltage X
@@ -197,14 +191,14 @@ class SocketClient(object):
                     # Display status message
                     if self.print:
                         #print('frame:  {0}'.format(self.frame))
-                        #print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
+                        print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
                         #print('yaw:   {0:1.3f}'.format(animal_heading_360))                  
                         #print('volt:   {0:1.3f}'.format(output_voltage_yaw))
                         #print('int x:   {0:1.3f}'.format(wrapped_intx))
                         #print('volt:   {0:1.3f}'.format(output_voltage_x))
                         #print('int y:   {0:1.3f}'.format(wrapped_inty))
                         #print('volt:   {0:1.3f}'.format(output_voltage_y))
-                        print()
+                        #print()
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True
