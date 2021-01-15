@@ -50,9 +50,13 @@ hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 
 %Run the python script that runs fictrac and other experimental conditions
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
-    system(['python run_socket_client.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+    if strcmp(run_obj.set_up, 'WLI-TOBIN')
+        system(['c:\Users\Tots\anaconda3\envs\CLwind\python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+    end
+elseif (strcmp(run_obj.experiment_type,'Simulus_jump')==1)
+    disp('Trial type not ready!')
 elseif (strcmp(run_obj.experiment_type,'Gain_change')==1)
-    system(['python run_socket_client_gain_change.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+    disp('Trial type not ready!')
 end
 
 %Start the data acquisition
@@ -61,20 +65,4 @@ end
 system('exit');
 release(s);
 
-end
-
-%Functions to set the panels correctly for each experiment type
-
-function closedLoop(pattern, startPosition)
-%% begins closedLoop setting in panels
-Panel_com('stop');
-%set arena
-Panel_com('set_config_id', 1);
-%set pattern number
-Panel_com('set_pattern_id', pattern);
-Panel_com('set_position', [startPosition, 1]);
-%set closed loop for x
-Panel_com('set_mode', [3, 0]);
-Panel_com('quiet_mode_on');
-Panel_com('all_off');
 end

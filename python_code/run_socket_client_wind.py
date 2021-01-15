@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('C:/src/experimental_code/python_code'))
-from socket_client_TO_debug import SocketClient  # note: different file for TO's experiments
+from socket_client_wind_debug import SocketClient  # note: different file for TO's experiments
 
 def experiment_code(experiment=None, time=None, logfile=None):
     experiment_param = {
