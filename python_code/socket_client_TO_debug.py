@@ -107,13 +107,18 @@ class SocketClient(object):
             while not self.done:  # main loop
 
                 # listening to Arduino
-                msg = ser.readline()  # read from serial
+                msg = ser.readline()  # read from serial until there's a \n
+                time_now = time.time() 
                 if len(msg) > 0:
-                    motor_pos = msg[:-2]  # remove \r and \n
-                    time_now = time.time() 
-                
-                    log_arduino = str("{:.7f}".format(time_now)) + "," + str(motor_pos, 'utf-8') + "\n"
-                    f_arduino.writelines(log_arduino)
+                    try:
+                        arduino_line = msg.decode('utf-8')[:-2]  # decode and remove \r and \n
+                        motor_info = arduino_line.split(", ")
+                        log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # remove empty spaces
+                        #log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0].strip() + "," + motor_info[1].strip() + "," + motor_info[2].strip() + "\n"  # if the Arduino is outputting 3 vals
+                        f_arduino.writelines(log_arduino)
+                        #print("worked:", log_arduino)
+                    except:
+                        print("failed:", str("{:.7f}".format(time_now)), msg)
                 
                 # ask the OS whether the socket is readable
                 # give 3 lists of sockets for reading, writing, and checking for errors; we only care about the first one
