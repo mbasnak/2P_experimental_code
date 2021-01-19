@@ -90,7 +90,7 @@ if(run_obj.using_2p == 1)
 end
 
 %If using the panels, turn them off
-if(run_obj.panel_status == 'On')
+strcmp(run_obj.panel_status, 'On')
     Panel_com('all_off');
 end
 
