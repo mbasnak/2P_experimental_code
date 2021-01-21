@@ -37,7 +37,7 @@ aI(9).InputType = 'SingleEnded';
 % Output channels:
 %
 %   Dev1:
-%       P0.0        = external trigger for scanimage
+%       P0.0 = external trigger for scanimage
 %
 
 %establish the acquisition rate and duration
@@ -68,9 +68,9 @@ experiment_type = run_obj.experiment_type;
 cur_trial_corename = [experiment_type '_' task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(run_obj.session_id) '_tid_' num2str(tid)];
 cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename '.hdf5' ];
 hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
-    
+        
 
-% Begin Panels 
+% Configure Panels 
 start = run_obj.start_pos;
 if ( strcmp(task, 'Closed_Loop') == 1 )  
     closedLoop(run_obj.pattern_number, start);
@@ -81,9 +81,11 @@ elseif ( strcmp(task, 'Closed_Loop_X_Open_Loop_Y') == 1)
 elseif ( strcmp(task, 'Closed_Loop_X_Closed_Loop_Y') == 1)
     closedClosedLoop(run_obj.pattern_number, start); 
 end
+
+% Start panels
 Panel_com('start');
 
-%Run the python script that runs fictrac and other experimental conditions
+% Run the python script that runs fictrac and other experimental conditions
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
     system(['python run_socket_client.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
 elseif (strcmp(run_obj.experiment_type,'Gain_change')==1)

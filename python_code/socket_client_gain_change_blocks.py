@@ -63,8 +63,8 @@ class SocketClientGainChange(object):
         self.PORT = 65432         # The (receiving) host port (sock_port)
 
         self.done = False
-		
-        self.gain_yaw = 1
+
+        self.gain_yaw = int(random.choice([-1,1])) #randomly choose which gain to start with
         self.gain_change = True
         self.heading_with_gain = 0
 
@@ -77,7 +77,7 @@ class SocketClientGainChange(object):
         )
 
 
-    def run(self):
+    def run(self, block_duration = 200):
 
         # UDP
         # Open the connection (ctrl-c / ctrl-break to quit)
@@ -141,12 +141,17 @@ class SocketClientGainChange(object):
 
                     # Set analog output voltage YAW_gain
                     #set yaw gain depending on how much time has elapsed
-                    if ((self.time_elapsed > 200) and (self.gain_change == True)):
+                    if ((self.time_elapsed > 1) and ((math.floor(self.time_elapsed)%block_duration)==0) and (self.gain_change == True)):
+                        if self.gain_yaw == 1:
                             self.gain_yaw = -1
                             self.gain_change = False
-                    elif self.time_elapsed > 1000:
+                        else:
                             self.gain_yaw = 1
+                            self.gain_change = False
 
+                    #reset self.gain_change 1 sec before the gain change
+                    if (((math.floor(self.time_elapsed+1)%block_duration)==0) and (self.gain_change == False)):
+                        self.gain_change = True
 
                     self.heading_with_gain = (self.heading_with_gain + self.deltaheading*self.gain_yaw) % (2*np.pi)
                     output_voltage_yaw_gain = (self.heading_with_gain)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
