@@ -32,11 +32,18 @@ class SocketClient(object):
 
 
         # Set up Phidget channels (0-index)
+        self.aout_channel_motor = 0  # for sending the motor position to the NI-DAQ thorugh Phidget
         self.aout_channel_x = 1
         self.aout_channel_yaw = 2
-        self.aout_channel_y = 3
+        self.aout_channel_y = 3     
         self.aout_max_volt = 10.0
         self.aout_min_volt = 0.0
+
+        # Setup analog output motor
+        self.aout_motor = VoltageOutput()
+        self.aout_motor.setChannel(self.aout_channel_motor)
+        self.aout_motor.openWaitForAttachment(5000)
+        self.aout_motor.setVoltage(0.0)
 
         # Setup analog output X
         self.aout_x = VoltageOutput()
@@ -109,11 +116,11 @@ class SocketClient(object):
                 # listening to Arduino
                 msg = ser.readline()  # read from serial until there's a \n
                 time_now = time.time() 
-                if len(msg) > 0:
+                if msg:  # message is not empty
                     try:
                         arduino_line = msg.decode('utf-8')[:-2]  # decode and remove \r and \n
                         motor_info = arduino_line.split(", ")
-                        log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # remove empty spaces
+                        log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # first element is the current motor position (0-360 deg)
                         #log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0].strip() + "," + motor_info[1].strip() + "," + motor_info[2].strip() + "\n"  # if the Arduino is outputting 3 vals
                         f_arduino.writelines(log_arduino)
                         #print("worked:", log_arduino)
@@ -174,21 +181,24 @@ class SocketClient(object):
                     log_fictrac = str("{:.7f}".format(time_now)) + "," + str(animal_heading_360) + "\n"
                     f_fictrac.writelines(log_fictrac)
 
-                    #Set Phidget voltages using FicTrac data
+                    ### Set Phidget voltages using FicTrac data
+                    # Set analog output voltage motor ()
+                    motor_pos = (motor_info[0] / 360) * 2 * np.pi  # convert motor position from deg to rad
+                    output_voltage_motor = motor_pos * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
+                    self.aout_motor.setVoltage(output_voltage_motor)
+
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))                   
                     output_voltage_x = wrapped_intx * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_x.setVoltage(output_voltage_x)
 
                     # Set analog output voltage YAW
-                    output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
-                    print(output_voltage_yaw)
+                    output_voltage_yaw = (self.heading) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
                     self.aout_yaw.setVoltage(output_voltage_yaw) 
 
                     # Set analog output voltage Y
                     wrapped_inty = self.inty % (2 * np.pi)
-                    output_voltage_y = wrapped_inty * (self.aout_max_volt - self.aout_min_volt) / (
-                                2 * np.pi)
+                    output_voltage_y = wrapped_inty * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_y.setVoltage(output_voltage_y)
 
                     # Save data in log file

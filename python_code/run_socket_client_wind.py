@@ -33,5 +33,5 @@ if __name__ == '__main__':
     else:  # no command line argument provided
         experiment_code()
 
-# an example of how to run from the command line
+# an example of how to run this code from the command line
 # python.exe run_socket_client_wind.py Spontaneous_walking 3 "C:\Users\Tots\Documents\test\20210115_test\ball\hdf5_Spontaneous_walking_Closed-loop_20210119_123524_sid_1_tid_1.hdf5"  1 &'

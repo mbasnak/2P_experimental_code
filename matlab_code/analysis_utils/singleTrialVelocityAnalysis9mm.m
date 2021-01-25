@@ -1,4 +1,4 @@
-function [smoothed] = singleTrialVelocityAnalysis(data, sampleRate)
+function [smoothed] = singleTrialVelocityAnalysis9mm(data, sampleRate)
 % This function processes the raw position data obtained from FicTrac to
 % give back the velocity in degrees.
 
@@ -39,10 +39,10 @@ function [smoothed] = singleTrialVelocityAnalysis(data, sampleRate)
 
 
 %% Smooth the data
-
-    smoothed.Intx = smoothdata(unwrapped.Intx,'rlowess',25); 
-    smoothed.Inty = smoothdata(unwrapped.Inty,'rlowess',25); 
-    smoothed.angularPosition = smoothdata(unwrapped.angularPosition,'rlowess',25);
+    WIN_SIZE = 1; % found out that 25 is too stringent, so I'm turning this off for now (TO, 1/25/2021)
+    smoothed.Intx = smoothdata(unwrapped.Intx,'rlowess',WIN_SIZE); 
+    smoothed.Inty = smoothdata(unwrapped.Inty,'rlowess',WIN_SIZE); 
+    smoothed.angularPosition = smoothdata(unwrapped.angularPosition,'rlowess',WIN_SIZE);
     
      
 %% Transform to useful systems 

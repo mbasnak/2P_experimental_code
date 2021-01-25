@@ -15,6 +15,7 @@ settings = sensor_settings;
 SAMPLING_RATE = settings.sampRate;
 s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 total_duration = run_obj.trial_t; %trial duration taken from the GUI input
+s.DurationInSeconds = total_duration; % specify explicitly (important when you don't have output_data)
 
 %% prepare scanimage
 if strcmp(run_obj.set_up, '2P-room')
