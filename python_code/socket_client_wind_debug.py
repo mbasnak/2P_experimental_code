@@ -176,12 +176,13 @@ class SocketClient(object):
 
                     #Set Phidget voltages using FicTrac data
                     # Set analog output voltage X
-                    wrapped_intx = (self.intx % (2 * np.pi))
+                    wrapped_intx = (self.intx % (2 * np.pi))                   
                     output_voltage_x = wrapped_intx * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_x.setVoltage(output_voltage_x)
 
                     # Set analog output voltage YAW
                     output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
+                    print(output_voltage_yaw)
                     self.aout_yaw.setVoltage(output_voltage_yaw) 
 
                     # Set analog output voltage Y
@@ -198,7 +199,7 @@ class SocketClient(object):
                         #print('frame:  {0}'.format(self.frame))
                         print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
                         #print('yaw:   {0:1.3f}'.format(animal_heading_360))                  
-                        #print('volt:   {0:1.3f}'.format(output_voltage_yaw))
+                        print('volt:   {0:1.3f}'.format(output_voltage_yaw))
                         #print('int x:   {0:1.3f}'.format(wrapped_intx))
                         #print('volt:   {0:1.3f}'.format(output_voltage_x))
                         #print('int y:   {0:1.3f}'.format(wrapped_inty))
