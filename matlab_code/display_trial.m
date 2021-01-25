@@ -6,8 +6,14 @@ settings = sensor_settings;
 
 %% get fly position and velocity, as well as stim position
 
-x_pixels = 96; %= number of x dimensions in the panels (i.e., 96 pixels for the 360 arena)
-[ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data( trial_time, trial_data, x_pixels); 
+if (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 0) 
+    x_pixels = 96; %= number of x dimensions in the panels (i.e., 96 pixels for the 360 arena)
+    [ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data( trial_time, trial_data, x_pixels); 
+elseif (strcmp(run_obj.panel_status, 'On') == 0) & (strcmp(run_obj.wind_status, 'On') == 1) 
+    [ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data_wind( trial_time, trial_data); 
+elseif (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 1) 
+    % TO DO
+end
 
 
 %% Display trial results
@@ -30,7 +36,7 @@ if (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On'
     viz_figs.text_trialtype = text(.4, 1, ['Panel Mode: ' run_obj.panel_mode] , 'FontSize', 12, 'Interpreter', 'none');
 elseif (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 0) 
     viz_figs.text_trialtype = text(.4, 1, ['Panel Mode: ' run_obj.panel_mode] , 'FontSize', 12, 'Interpreter', 'none');
-else
+elseif (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 1) 
     viz_figs.text_trialtype = text(.4, 1, ['Panel Mode: ' run_obj.panel_mode ' | Wind Mode: ' run_obj.wind_mode] , 'FontSize', 12, 'Interpreter', 'none'); %same    
 end
 

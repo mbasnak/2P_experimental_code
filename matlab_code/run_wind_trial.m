@@ -50,9 +50,8 @@ hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 
 %Run the python script that runs fictrac and other experimental conditions
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
-    %system('conda activate CLwind & python')
     if strcmp(run_obj.set_up, 'WLI-TOBIN')
-        system(['conda activate CLwind & python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file])
+        system(['conda activate CLwind & python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &'])
     end
         %system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
 elseif (strcmp(run_obj.experiment_type,'Simulus_jump')==1)

@@ -31,7 +31,7 @@ class SocketClient(object):
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
 
 
-        # Set up Phidget channels
+        # Set up Phidget channels (0-index)
         self.aout_channel_x = 1
         self.aout_channel_yaw = 2
         self.aout_channel_y = 3
@@ -199,7 +199,7 @@ class SocketClient(object):
                         #print('frame:  {0}'.format(self.frame))
                         print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
                         #print('yaw:   {0:1.3f}'.format(animal_heading_360))                  
-                        print('volt:   {0:1.3f}'.format(output_voltage_yaw))
+                        #print('volt:   {0:1.3f}'.format(output_voltage_yaw))
                         #print('int x:   {0:1.3f}'.format(wrapped_intx))
                         #print('volt:   {0:1.3f}'.format(output_voltage_x))
                         #print('int y:   {0:1.3f}'.format(wrapped_inty))
