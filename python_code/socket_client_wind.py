@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-#import relevant modules
 import socket  # for delegating the task of listening to the socket to the OS
 import select
 import time
@@ -29,7 +28,6 @@ class SocketClient(object):
         self.experiment = self.param['experiment']
         self.experiment_time = self.param['experiment_time']
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
-
 
         # Set up Phidget channels (0-index)
         self.aout_channel_motor = 0  # for sending the motor position to the NI-DAQ thorugh Phidget
@@ -63,7 +61,7 @@ class SocketClient(object):
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(0.0)
 
-        self.print = True;
+        self.print = True
 
         # Set up socket info for connecting with the FicTrac
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
@@ -107,25 +105,25 @@ class SocketClient(object):
             sock.bind((self.HOST, self.PORT))  # takes one argument, give it as a tuple
             sock.setblocking(False)  # make it non-blocking
     
-            # Keep receiving data until FicTrac closes
+            # Keep receiving data from socket until FicTrac closes
             data = ""
             timeout_in_seconds = 1
 
             while not self.done:  # main loop
 
+                motor_pos = np.nan  # default value before receiving the data
                 # listening to Arduino
                 msg = ser.readline()  # read from serial until there's a \n
                 time_now = time.time() 
-                if msg:  # message is not empty
+                if msg:  # received a non-empty message
                     try:
                         arduino_line = msg.decode('utf-8')[:-2]  # decode and remove \r and \n
-                        motor_info = arduino_line.split(", ")
-                        log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # first element is the current motor position (0-360 deg)
-                        #log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0].strip() + "," + motor_info[1].strip() + "," + motor_info[2].strip() + "\n"  # if the Arduino is outputting 3 vals
-                        f_arduino.writelines(log_arduino)
-                        #print("worked:", log_arduino)
+                        #motor_info = arduino_line.split(", ")
+                        #log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # first element is the current motor position (0-360 deg)
+                        #f_arduino.writelines(log_arduino)
+                        motor_pos = int(arduino_line)  # current motor position (0-360 deg)
                     except:
-                        print("failed:", str("{:.7f}".format(time_now)), msg)
+                        print("message from Arduino is not a number:", msg)
                 
                 # ask the OS whether the socket is readable
                 # give 3 lists of sockets for reading, writing, and checking for errors; we only care about the first one
@@ -162,13 +160,13 @@ class SocketClient(object):
             
                     # Extract FicTrac variables
                     # (see https://github.com/rjdmoore/fictrac/blob/master/doc/data_header.txt for descriptions)
-                    self.frame = int(toks[1])
-                    self.posx = float(toks[15])
-                    self.posy = float(toks[16])
-                    self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rads)
-                    self.intx = float(toks[20])
-                    self.inty = float(toks[21])
-                    self.timestamp = float(toks[22])
+                    self.frame = int(toks[1])  # frame counter
+                    self.posx = float(toks[15])  # integrated x position (rad)
+                    self.posy = float(toks[16])  # integrated y position (rad)
+                    self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rad)
+                    self.intx = float(toks[20])  # integrated x position (rad) of the sphere in lab coord neglecting heading
+                    self.inty = float(toks[21])  # integrated y position (rad) of the sphere in lab coord neglecting heading
+                    self.timestamp = float(toks[22])  # frame capture time (ms) since epoch
 
                     # send the heading signal to Arduino
                     animal_heading_360 = int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
@@ -183,14 +181,13 @@ class SocketClient(object):
 
                     ### Set Phidget voltages using FicTrac data
                     # Set analog output voltage motor ()
-                    if 'motor_info' in locals():  # message from Arduion found
-                        try:
-                            motor_pos = (int(motor_info[0]) / 360) * 2 * np.pi  # convert motor position from deg to rad
-                            output_voltage_motor = motor_pos * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
-                            self.aout_motor.setVoltage(output_voltage_motor)
-                        except:  # the message from Arduino might not be a int value
-                            pass
-
+                    if not np.isnan(motor_pos):
+                        self.motor_pos_rad = (motor_pos / 360) * 2 * np.pi  # convert motor position from deg to rad
+                        output_voltage_motor = self.motor_pos_rad * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
+                        self.aout_motor.setVoltage(output_voltage_motor)
+                    else:
+                        self.motor_pos_rad = np.nan                    
+                        
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))                   
                     output_voltage_x = wrapped_intx * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
@@ -205,26 +202,26 @@ class SocketClient(object):
                     output_voltage_y = wrapped_inty * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_y.setVoltage(output_voltage_y)
 
-                    # Save data in log file
+                    # Save data in HDF5 file
                     self.write_logfile() 
 
                     # Display status message
                     if self.print:
                         #print('frame:  {0}'.format(self.frame))
-                        print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
+                        print('time elapsed: {0:1.3f}'.format(self.time_elapsed), end='')
                         #print('yaw:   {0:1.3f}'.format(animal_heading_360))                  
                         #print('volt:   {0:1.3f}'.format(output_voltage_yaw))
                         #print('int x:   {0:1.3f}'.format(wrapped_intx))
                         #print('volt:   {0:1.3f}'.format(output_voltage_x))
                         #print('int y:   {0:1.3f}'.format(wrapped_inty))
                         #print('volt:   {0:1.3f}'.format(output_voltage_y))
-                        #print()
+                        print(f'  heading: {animal_heading_360}', end='')
+                        print(f'  motor_pos: {motor_pos}')
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True
                         break
 
-            # END OF EXPERIMENT
             print('Trial finished - quitting!')
 
 
@@ -237,6 +234,7 @@ class SocketClient(object):
                 'posy': self.posy,
                 'intx': self.intx,
                 'inty': self.inty,
-                'heading': self.heading
+                'heading': self.heading,
+                'motor': self.motor_pos_rad
             }
             self.logger.add(log_data)
