@@ -1,5 +1,5 @@
 # MATLAB files
-.asv
+*.asv
 
 # Python bite code
-.pyc
+*.pyc
