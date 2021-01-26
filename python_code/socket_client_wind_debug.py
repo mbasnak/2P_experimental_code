@@ -184,10 +184,12 @@ class SocketClient(object):
                     ### Set Phidget voltages using FicTrac data
                     # Set analog output voltage motor ()
                     if 'motor_info' in locals():  # message from Arduion found
-                        if motor_info[0]:  # make sure message is not empty
+                        try:
                             motor_pos = (int(motor_info[0]) / 360) * 2 * np.pi  # convert motor position from deg to rad
                             output_voltage_motor = motor_pos * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
                             self.aout_motor.setVoltage(output_voltage_motor)
+                        except:  # the message from Arduino might not be a int value
+                            pass
 
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))                   

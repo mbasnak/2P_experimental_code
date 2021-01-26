@@ -14,9 +14,12 @@ settings.fictrac_yaw_gain_DAQ_AI = 1;
 settings.fictrac_x_gain_DAQ_AI = 3; 
 settings.fictrac_y_DAQ_AI = 2; 
 
+settings.motor_DAQ_AI = 5;
+
 data.ficTracIntx = trial_data( :, settings.fictrac_x_DAQ_AI ); %data from x channel
 data.ficTracAngularPosition = trial_data( :, settings.fictrac_yaw_gain_DAQ_AI ); 
 data.ficTracInty = trial_data( :, settings.fictrac_y_DAQ_AI );
+data.motor = trial_data(:, settings.motor_DAQ_AI );
 
 %Get filtered position and velocity data 
 smoothed = singleTrialVelocityAnalysis9mm(data, settings.sampRate);
@@ -28,8 +31,12 @@ vel_yaw = smoothed.angularVel;
 fly_pos = smoothed.degAngularPosition;
 [ t ] = resample(trial_time, 25, settings.sampRate); %downsamples the time
 
-% TO DO: return wind tube position
-stim_pos = nan;
+% convert motor position from voltage to deg
+downsampled.motor = resample(data.motor, 25, settings.sampRate);
+downsRad.motor = downsampled.motor .* 2 .* pi ./ 10; % from voltage to radian
+downsDeg.motor = downsRad.motor .* 360 ./ (2 * pi); 
+
+stim_pos = downsDeg.motor;
 
 end
 

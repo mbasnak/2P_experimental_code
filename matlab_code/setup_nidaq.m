@@ -42,7 +42,7 @@ elseif strcmp(setup_name, 'WLI-TOBIN')
     s = daq.createSession('ni');
 
     %add analog input channels
-    ai_channels_used = 1:4;
+    ai_channels_used = 1:5;
     aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';

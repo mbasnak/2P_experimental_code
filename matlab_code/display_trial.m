@@ -62,6 +62,7 @@ subplot(viz_figs.stim_ax);
 plot(t, stim_pos);
 ylim([0 360]);
 xlim([0 trial_time(end)]);
+set(gca, 'ytick', 0:90:360)
 title('Stimulus position');
 ylabel('Deg');
 
@@ -72,6 +73,7 @@ title('Fly position');
 ylabel('Deg');
 ylim([0 360]);
 xlim([0 trial_time(end)]);
+set(gca, 'ytick', 0:90:360)
 
 % Fwd velocity subplot
 subplot(viz_figs.fwd_ax);
