@@ -3,3 +3,9 @@
 
 # Python bite code
 *.pyc
+
+# Directories
+python_code/__pycache__
+python_code/.vscode
+python_code/.idea
+python_code/.ipynb_checkpoints
