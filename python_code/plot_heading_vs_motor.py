@@ -1,5 +1,5 @@
 """
-code for reading the HDF5 file and plotting heading vs motor position
+code for reading two separate HDF5 files and plotting fly heading vs motor position
 Tatsuo Okubo
 2021-01-26
 """
@@ -7,14 +7,18 @@ import os
 import h5py
 import matplotlib.pyplot as plt
 
-os.chdir("C:/Users/Tots/Documents/test/20210125_test/ball")
-file_name = "hdf5_Spontaneous_walking_Closed-loop_20210126_115119_sid_68_tid_1000001.hdf5"
-f = h5py.File(file_name, 'r')
-t = f['time']
+os.chdir("C:/Users/Tots/Documents/test/20210126_test/ball")
+file_name_fictrac = "hdf5_Spontaneous_walking_Closed-loop_20210126_135653_sid_8_tid_1.hdf5"
+file_name_arduino = file_name_fictrac.replace(".hdf5", "_arduino.hdf5")
+f = h5py.File(file_name_fictrac, 'r')
+t1 = f['time']
 h = f['heading']
-m = f['motor']
 
-plt.plot(t, h, 'b.', label='fly heading')
-plt.plot(t, m, 'r.', label='motor position')
+f2 = h5py.File(file_name_arduino, 'r')
+t2 = f2['time']
+m = f2['motor']
+
+plt.plot(t1, h, 'b.', label='fly heading')
+plt.plot(t2, m, 'r.', label='motor position')
 plt.legend()
 plt.show()

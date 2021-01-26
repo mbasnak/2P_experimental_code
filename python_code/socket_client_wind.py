@@ -72,36 +72,42 @@ class SocketClient(object):
         self.baudrate = 115200  # 9600
         self.serialTimeout = 0.001 # blocking timeout for readline()
 
-        # log for Arduino
-        self.file_path = "C:\\Users\\Tots\\Documents\\Python\\CLwind\\log\\"
-        now = datetime.datetime.now()
-        date_str = now.strftime("%Y%m%d_%H%M%S")
-        self.file_name_arduino = self.file_path + date_str + "_arduino.csv"
+        ## log for Arduino
+        #self.file_path = "C:\\Users\\Tots\\Documents\\Python\\CLwind\\log\\"
+        #now = datetime.datetime.now()
+        #date_str = now.strftime("%Y%m%d_%H%M%S")
+        #self.file_name_arduino = self.file_path + date_str + "_arduino.csv"
 
         # log for FicTrac
-        self.file_name_fictrac = self.file_path + date_str + "_fictrac.csv"
+        # self.file_name_fictrac = self.file_path + date_str + "_fictrac.csv"
 
         # flag for indicating when the trial is done
         self.done = False
 
         #set up logger to save hd5f file
-        self.logger = H5Logger(
-                filename = self.param['logfile_name'],
-                auto_incr = self.param['logfile_auto_incr'],
-                auto_incr_format = self.param['logfile_auto_incr_format'],
-                param_attr = self.param
+        self.logger_fictrac = H5Logger(
+            filename = self.param['logfile_name'],
+            auto_incr = self.param['logfile_auto_incr'],
+            auto_incr_format = self.param['logfile_auto_incr_format'],
+            param_attr = self.param
         )
+
+        #set up logger to save hd5f file
+        self.logger_arduino = H5Logger(
+            filename = (self.param['logfile_name']).replace('.hdf5', '_arduino.hdf5'),
+            auto_incr = self.param['logfile_auto_incr'],
+            auto_incr_format = self.param['logfile_auto_incr_format'],
+            param_attr = self.param
+        )
+
 
 
     def run(self, gain_x = 1):
 
         # connect to socket via UDP, not TCP!
         # connect to Arduino via serial
-        # open file for logging Arduino outputs
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock,\
-         serial.Serial(self.COM, self.baudrate, timeout=self.serialTimeout) as ser, \
-         open(self.file_name_arduino, mode='w') as f_arduino, \
-         open(self.file_name_fictrac, mode='w') as f_fictrac:
+         serial.Serial(self.COM, self.baudrate, timeout=self.serialTimeout) as ser:
             sock.bind((self.HOST, self.PORT))  # takes one argument, give it as a tuple
             sock.setblocking(False)  # make it non-blocking
     
@@ -111,10 +117,11 @@ class SocketClient(object):
 
             while not self.done:  # main loop
 
-                motor_pos = np.nan  # default value before receiving the data
+                motor_pos = np.nan
+                self.motor_pos_rad = np.nan  # default value before receiving the data
                 # listening to Arduino
                 msg = ser.readline()  # read from serial until there's a \n
-                time_now = time.time() 
+                self.time_arduino = time.time() - self.time_start  # (s) 
                 if msg:  # received a non-empty message
                     try:
                         arduino_line = msg.decode('utf-8')[:-2]  # decode and remove \r and \n
@@ -122,6 +129,8 @@ class SocketClient(object):
                         #log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # first element is the current motor position (0-360 deg)
                         #f_arduino.writelines(log_arduino)
                         motor_pos = int(arduino_line)  # current motor position (0-360 deg)
+                        self.motor_pos_rad = (motor_pos / 360) * 2 * np.pi  # convert motor position from deg to rad
+                        self.write_logfile_arduino()
                     except:
                         print("message from Arduino is not a number:", msg)
                 
@@ -141,9 +150,7 @@ class SocketClient(object):
             
                     # Decode received data
                     data += new_data.decode('UTF-8')
-                    #get time
-                    time_now = time.time() 
-                    self.time_elapsed = time_now - self.time_start  # (s)
+                    self.time_elapsed = time.time() - self.time_start  # (s)
             
                     # Find the first frame of data
                     endline = data.find("\n")
@@ -174,19 +181,12 @@ class SocketClient(object):
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                     ser.write(arduino_byte)  # send to serial port  
 
-                    # write to FicTrac log file
-                    time_now = time.time()
-                    log_fictrac = str("{:.7f}".format(time_now)) + "," + str(animal_heading_360) + "\n"
-                    f_fictrac.writelines(log_fictrac)
 
-                    ### Set Phidget voltages using FicTrac data
-                    # Set analog output voltage motor ()
-                    if not np.isnan(motor_pos):
-                        self.motor_pos_rad = (motor_pos / 360) * 2 * np.pi  # convert motor position from deg to rad
+                    ## Set Phidget voltages using FicTrac data
+                    # Set analog output voltage, motor
+                    if not np.isnan(self.motor_pos_rad):
                         output_voltage_motor = self.motor_pos_rad * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
-                        self.aout_motor.setVoltage(output_voltage_motor)
-                    else:
-                        self.motor_pos_rad = np.nan                    
+                        self.aout_motor.setVoltage(output_voltage_motor)                
                         
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))                   
@@ -202,19 +202,12 @@ class SocketClient(object):
                     output_voltage_y = wrapped_inty * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_y.setVoltage(output_voltage_y)
 
-                    # Save data in HDF5 file
-                    self.write_logfile() 
+                    # Save fictrac data in HDF5 file
+                    self.write_logfile_fictrac() 
 
                     # Display status message
                     if self.print:
-                        #print('frame:  {0}'.format(self.frame))
                         print('time elapsed: {0:1.3f}'.format(self.time_elapsed), end='')
-                        #print('yaw:   {0:1.3f}'.format(animal_heading_360))                  
-                        #print('volt:   {0:1.3f}'.format(output_voltage_yaw))
-                        #print('int x:   {0:1.3f}'.format(wrapped_intx))
-                        #print('volt:   {0:1.3f}'.format(output_voltage_x))
-                        #print('int y:   {0:1.3f}'.format(wrapped_inty))
-                        #print('volt:   {0:1.3f}'.format(output_voltage_y))
                         print(f'  heading: {animal_heading_360}', end='')
                         print(f'  motor_pos: {motor_pos}')
 
@@ -226,15 +219,23 @@ class SocketClient(object):
 
 
     #define function to log data to hdf5 file
-    def write_logfile(self):
-            log_data = {
-                'time': self.time_elapsed,
-                'frame': self.frame,
-                'posx': self.posx,
-                'posy': self.posy,
-                'intx': self.intx,
-                'inty': self.inty,
-                'heading': self.heading,
-                'motor': self.motor_pos_rad
-            }
-            self.logger.add(log_data)
+    def write_logfile_fictrac(self):
+        log_data = {
+            'time': self.time_elapsed,
+            'frame': self.frame,
+            'posx': self.posx,
+            'posy': self.posy,
+            'intx': self.intx,
+            'inty': self.inty,
+            'heading': self.heading,
+            'motor': self.motor_pos_rad
+        }
+        self.logger_fictrac.add(log_data)
+
+    def write_logfile_arduino(self):
+        log_data = {
+            'time': self.time_arduino,
+            'motor': self.motor_pos_rad
+        }
+        self.logger_arduino.add(log_data)
+        

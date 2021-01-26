@@ -59,7 +59,7 @@ viz_figs.fly_trajectory = subtightplot(6,8,[43:45], [.1 .05], [.1, .1], [.1, .1]
 
 %Stimulus position
 subplot(viz_figs.stim_ax);
-plot(t, stim_pos);
+plot(t, stim_pos, 'color', [0.3 0.2 0.8]);
 ylim([0 360]);
 xlim([0 trial_time(end)]);
 set(gca, 'ytick', 0:90:360)
@@ -69,6 +69,8 @@ ylabel('Deg');
 %Fly position
 subplot(viz_figs.fly_ax);
 plot(t, fly_pos, 'color', [0.2 0.8 0.3]);
+hold on
+plot(t, stim_pos, 'color', [0.3 0.2 0.8], 'linestyle', ':');
 title('Fly position');
 ylabel('Deg');
 ylim([0 360]);
