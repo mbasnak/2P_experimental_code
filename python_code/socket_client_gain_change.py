@@ -32,11 +32,18 @@ class SocketClientGainChange(object):
 
 
         # Set up Phidget channels
+        self.aout_channel_yaw = 0
         self.aout_channel_x = 1
-        self.aout_channel_yaw = 2
+        self.aout_channel_yaw_gain = 2
         self.aout_channel_y = 3
         self.aout_max_volt = 10.0
         self.aout_min_volt = 0.0
+
+        # Setup analog output YAW
+        self.aout_yaw = VoltageOutput()
+        self.aout_yaw.setChannel(self.aout_channel_yaw)
+        self.aout_yaw.openWaitForAttachment(5000)
+        self.aout_yaw.setVoltage(0.0)
 
         # Setup analog output X
         self.aout_x = VoltageOutput()
@@ -45,10 +52,10 @@ class SocketClientGainChange(object):
         self.aout_x.setVoltage(0.0)
 
         # Setup analog output YAW
-        self.aout_yaw = VoltageOutput()
-        self.aout_yaw.setChannel(self.aout_channel_yaw)
-        self.aout_yaw.openWaitForAttachment(5000)
-        self.aout_yaw.setVoltage(0.0)
+        self.aout_yaw_gain = VoltageOutput()
+        self.aout_yaw_gain.setChannel(self.aout_channel_yaw_gain)
+        self.aout_yaw_gain.openWaitForAttachment(5000)
+        self.aout_yaw_gain.setVoltage(0.0)
 
         # Setup analog output Y
         self.aout_y = VoltageOutput()
@@ -133,6 +140,12 @@ class SocketClientGainChange(object):
                     self.timestamp = float(toks[22])
 
                     #Set Phidget voltages using FicTrac data
+                    
+                    # Set analog output voltage yaw
+                    output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
+                    self.aout_yaw.setVoltage(output_voltage_yaw) 
+
+
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))
                     output_voltage_x = wrapped_intx * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
@@ -150,7 +163,7 @@ class SocketClientGainChange(object):
 
                     self.heading_with_gain = (self.heading_with_gain + self.deltaheading*self.gain_yaw) % (2*np.pi)
                     output_voltage_yaw_gain = (self.heading_with_gain)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
-                    self.aout_yaw.setVoltage(10-output_voltage_yaw_gain) 
+                    self.aout_yaw_gain.setVoltage(10-output_voltage_yaw_gain) 
 
 
                     # Set analog output voltage Y
