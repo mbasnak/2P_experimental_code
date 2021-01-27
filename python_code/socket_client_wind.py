@@ -72,15 +72,6 @@ class SocketClient(object):
         self.baudrate = 115200  # 9600
         self.serialTimeout = 0.001 # blocking timeout for readline()
 
-        ## log for Arduino
-        #self.file_path = "C:\\Users\\Tots\\Documents\\Python\\CLwind\\log\\"
-        #now = datetime.datetime.now()
-        #date_str = now.strftime("%Y%m%d_%H%M%S")
-        #self.file_name_arduino = self.file_path + date_str + "_arduino.csv"
-
-        # log for FicTrac
-        # self.file_name_fictrac = self.file_path + date_str + "_fictrac.csv"
-
         # flag for indicating when the trial is done
         self.done = False
 
@@ -130,7 +121,14 @@ class SocketClient(object):
                         #f_arduino.writelines(log_arduino)
                         motor_pos = int(arduino_line)  # current motor position (0-360 deg)
                         self.motor_pos_rad = (motor_pos / 360) * 2 * np.pi  # convert motor position from deg to rad
+                        
+                         # Set analog output voltage of Phidget
+                        output_voltage_motor = self.motor_pos_rad * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
+                        self.aout_motor.setVoltage(output_voltage_motor)
+
+                        # write to HDF5 file    
                         self.write_logfile_arduino()
+    
                     except:
                         print("message from Arduino is not a number:", msg)
                 
@@ -183,11 +181,6 @@ class SocketClient(object):
 
 
                     ## Set Phidget voltages using FicTrac data
-                    # Set analog output voltage, motor
-                    if not np.isnan(self.motor_pos_rad):
-                        output_voltage_motor = self.motor_pos_rad * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
-                        self.aout_motor.setVoltage(output_voltage_motor)                
-                        
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))                   
                     output_voltage_x = wrapped_intx * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
@@ -207,9 +200,9 @@ class SocketClient(object):
 
                     # Display status message
                     if self.print:
-                        print('time elapsed: {0:1.3f}'.format(self.time_elapsed), end='')
-                        print(f'  heading: {animal_heading_360}', end='')
-                        print(f'  motor_pos: {motor_pos}')
+                        print(f'time elapsed: {self.time_elapsed: 1.3f}', end='')
+                        print(f'  heading: {animal_heading_360:3.0f}', end='')
+                        print(f'  motor pos: {motor_pos:3.0f}')
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True
