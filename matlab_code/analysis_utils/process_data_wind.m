@@ -10,12 +10,10 @@ settings = sensor_settings;
 sampRate_new = 50; % sampling rate after downsampling [Hz]
 
 %Asignment of the Daq channels
-settings.fictrac_x_DAQ_AI = 4;
 settings.fictrac_yaw_gain_DAQ_AI = 1;
-settings.fictrac_x_gain_DAQ_AI = 3; 
 settings.fictrac_y_DAQ_AI = 2; 
-
-settings.motor_DAQ_AI = 5;
+settings.fictrac_x_DAQ_AI = 3;
+settings.motor_DAQ_AI = 4;
 
 data.ficTracIntx = trial_data( :, settings.fictrac_x_DAQ_AI ); %data from x channel
 data.ficTracAngularPosition = trial_data( :, settings.fictrac_yaw_gain_DAQ_AI ); 
@@ -33,7 +31,7 @@ fly_pos = smoothed.degAngularPosition;
 [ t ] = resample_new(trial_time, sampRate_new, settings.sampRate); %downsamples the time
 
 % convert motor position from voltage to deg
-downsampled.motor = resample(data.motor, sampRate_new, settings.sampRate);
+downsampled.motor = resample_new(data.motor, sampRate_new, settings.sampRate);
 downsRad.motor = downsampled.motor .* 2 .* pi ./ 10; % from voltage to radian
 downsDeg.motor = downsRad.motor .* 360 ./ (2 * pi); 
 stim_pos = downsDeg.motor;

@@ -46,22 +46,20 @@ elseif strcmp(setup_name, 'WLI-TOBIN')
     %   Dev1:
     %       AI.1 = Fictrac yaw gain
     %       AI.2 = Fictrac y
-    %       AI.3 = Fictrac x gain
-    %       AI.4 = Fictrac x
-    %       AI.5 = Panels x
-    %       AI.6 = Panels y
-    %       AI.7 = Panels ON/OFF
-    %       AI.8 = arduino LED
-    %       AI.9 = piezo z
+    %       AI.3 = Fictrac x
+    %       AI.4 = motor
+    %       AI.5 = valve
+    %       AI.6 = valve
     %
     % Output channels:
     %
     %   Dev1:
-    %       P0.0        = external trigger for scanimage
-    %
+    %       D0.0 
+    %       D0.1
+    %       D0.2
     
     %add analog input channels
-    ai_channels_used = 1:5;
+    ai_channels_used = 1:4;
     aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';

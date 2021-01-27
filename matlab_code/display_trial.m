@@ -70,7 +70,7 @@ ylabel('Deg');
 subplot(viz_figs.fly_ax);
 plot(t, fly_pos, 'color', [0.2 0.8 0.3]);
 hold on
-%plot(t, stim_pos, 'color', [0.3 0.2 0.8], 'linestyle', ':');
+plot(t, stim_pos, 'color', [0.3 0.2 0.8], 'linestyle', ':');
 title('Fly position');
 ylabel('Deg');
 ylim([0 360]);
@@ -121,9 +121,12 @@ set(viz_figs.circular_fly, 'OuterPosition', [g(1) g(2) .34 .34]);
 subplot(viz_figs.fly_trajectory)
 %import posx and posy data from the hdf5 file
 hdf5_files = dir(fullfile(run_obj.experiment_ball_dir,'*hdf5'));
-for file = 1:length(hdf5_files)
-    if contains(hdf5_files(file).name,['tid_',num2str(tid+1)])
+for file = length(hdf5_files):-1:1 % start from the most recent files
+    % make sure that it has the correct session # and trial ID, and that
+    % it's not an arduino log
+    if contains(hdf5_files(file).name,['sid_',num2str(run_obj.session_id), '_tid_',num2str(tid+1)]) && ~contains(hdf5_files(file).name, 'arduino')
         hd5f_file_to_read = fullfile(hdf5_files(file).folder,hdf5_files(file).name);
+        break
     end
 end
 posx = h5read(hd5f_file_to_read,'/posx');
