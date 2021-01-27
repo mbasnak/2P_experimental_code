@@ -70,7 +70,7 @@ ylabel('Deg');
 subplot(viz_figs.fly_ax);
 plot(t, fly_pos, 'color', [0.2 0.8 0.3]);
 hold on
-plot(t, stim_pos, 'color', [0.3 0.2 0.8], 'linestyle', ':');
+%plot(t, stim_pos, 'color', [0.3 0.2 0.8], 'linestyle', ':');
 title('Fly position');
 ylabel('Deg');
 ylim([0 360]);

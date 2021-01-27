@@ -41,6 +41,25 @@ if strcmp(setup_name, '2P-room')
 elseif strcmp(setup_name, 'WLI-TOBIN')
     s = daq.createSession('ni');
 
+    % Input channels:
+    %
+    %   Dev1:
+    %       AI.1 = Fictrac yaw gain
+    %       AI.2 = Fictrac y
+    %       AI.3 = Fictrac x gain
+    %       AI.4 = Fictrac x
+    %       AI.5 = Panels x
+    %       AI.6 = Panels y
+    %       AI.7 = Panels ON/OFF
+    %       AI.8 = arduino LED
+    %       AI.9 = piezo z
+    %
+    % Output channels:
+    %
+    %   Dev1:
+    %       P0.0        = external trigger for scanimage
+    %
+    
     %add analog input channels
     ai_channels_used = 1:5;
     aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');

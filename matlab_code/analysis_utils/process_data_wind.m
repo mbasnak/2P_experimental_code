@@ -30,7 +30,7 @@ vel_yaw = smoothed.angularVel;
 
 %Get position and time data
 fly_pos = smoothed.degAngularPosition;
-[ t ] = resample(trial_time, sampRate_new, settings.sampRate); %downsamples the time
+[ t ] = resample_new(trial_time, sampRate_new, settings.sampRate); %downsamples the time
 
 % convert motor position from voltage to deg
 downsampled.motor = resample(data.motor, sampRate_new, settings.sampRate);

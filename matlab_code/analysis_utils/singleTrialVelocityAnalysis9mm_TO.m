@@ -12,9 +12,9 @@ function [smoothed] = singleTrialVelocityAnalysis9mm_TO(data, sampleRate, sample
 
 
     % Downsample to match FicTrac's output
-    downsampled.Intx = resample(data.ficTracIntx, sampleRate_new, sampleRate); %For a 1000 rate acquisition frame rate from the NiDaq, downsampling to 25 Hz equals taking 1 every 40 frames
-    downsampled.Inty = resample(data.ficTracInty, sampleRate_new, sampleRate); %For a 1000 rate acquisition frame rate from the NiDaq, downsampling to 25 Hz equals taking 1 every 40 frames  
-    downsampled.angularPosition = resample(data.ficTracAngularPosition, sampleRate_new, sampleRate);
+    downsampled.Intx = resample_new(data.ficTracIntx, sampleRate_new, sampleRate); %For a 1000 rate acquisition frame rate from the NiDaq, downsampling to 25 Hz equals taking 1 every 40 frames
+    downsampled.Inty = resample_new(data.ficTracInty, sampleRate_new, sampleRate); %For a 1000 rate acquisition frame rate from the NiDaq, downsampling to 25 Hz equals taking 1 every 40 frames  
+    downsampled.angularPosition = resample_new(data.ficTracAngularPosition, sampleRate_new, sampleRate);
     
         
 % The output is downsampled. It isn't noticeable when plotting solid lines, and
