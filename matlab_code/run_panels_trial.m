@@ -26,7 +26,7 @@ aI(9).InputType = 'SingleEnded';
 %   Dev1:
 %       AI.1 = Fictrac yaw gain
 %       AI.2 = Fictrac y
-%       AI.3 = Fictrac x gain
+%       AI.3 = Fictrac yaw
 %       AI.4 = Fictrac x
 %       AI.5 = Panels x
 %       AI.6 = Panels y
