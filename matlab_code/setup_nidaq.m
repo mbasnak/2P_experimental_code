@@ -48,8 +48,8 @@ elseif strcmp(setup_name, 'WLI-TOBIN')
     %       AI.2 = Fictrac y
     %       AI.3 = Fictrac x
     %       AI.4 = motor
-    %       AI.5 = valve
-    %       AI.6 = valve
+    %       AI.5 = master valve
+    %       AI.6 = odor valve (HIGH: odor, LOW: solvent)
     %
     % Output channels:
     %
@@ -59,8 +59,9 @@ elseif strcmp(setup_name, 'WLI-TOBIN')
     %       D0.2
     
     %add analog input channels
-    ai_channels_used = 1:4;
+    ai_channels_used = 1:6;
     aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
+    dO = s.addDigitalChannel('Dev1', ['port0/line0:1'], 'OutputOnly'); % solenoid valves
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
     end

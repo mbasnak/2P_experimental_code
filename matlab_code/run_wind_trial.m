@@ -15,9 +15,8 @@ settings = sensor_settings;
 SAMPLING_RATE = settings.sampRate;
 s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 total_duration = run_obj.trial_t; %trial duration taken from the GUI input
-s.DurationInSeconds = total_duration; % specify explicitly (important when you don't have output_data)
 
-%% prepare scanimage
+%% prepare outputs
 if strcmp(run_obj.set_up, '2P-room')
     %pre-allocate output data (imaging trigger)
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
@@ -33,6 +32,14 @@ if strcmp(run_obj.set_up, '2P-room')
         acq = fscanf(scanimage_client, '%s');
         disp(['Read acq: ' acq ' from scanimage server' ]);
     end
+elseif strcmp(run_obj.set_up, 'WLI-TOBIN')
+    Ch.master = 1; % master solenoid valve
+    Ch.odor = 2; % odor (HIGH) vs solvant (LOW)
+    Pulse = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
+    Pulse(2:end-1) = 1.0;
+    output_data(:, Ch.master) = Pulse;
+    output_data(:, Ch.odor) = Pulse;
+    queueOutputData(s, output_data);
 end
 
 %% prepare file names
