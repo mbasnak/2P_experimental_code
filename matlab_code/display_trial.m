@@ -28,8 +28,10 @@ viz_figs.text_trialtime = text(.4, .6, ['Trial duration: ' num2str(run_obj.trial
 viz_figs.text_trialtime = text(.4, .8, ['Num trials: ' num2str(run_obj.num_trials)], 'FontSize', 12);
 if (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 0) 
     viz_figs.text_trialtype = text(.4, 1, ['Panel Mode: ' run_obj.panel_mode] , 'FontSize', 12, 'Interpreter', 'none');
-elseif (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 0) 
-    viz_figs.text_trialtype = text(.4, 1, ['Panel Mode: ' run_obj.panel_mode] , 'FontSize', 12, 'Interpreter', 'none');
+elseif (strcmp(run_obj.panel_status, 'On') == 0) & (strcmp(run_obj.wind_status, 'On') == 1) 
+    viz_figs.text_trialtype = text(.4, 1, ['Panel Mode: ' run_obj.wind_mode] , 'FontSize', 12, 'Interpreter', 'none');
+elseif (strcmp(run_obj.panel_status, 'On') == 0) & (strcmp(run_obj.wind_status, 'On') == 0) 
+    viz_figs.text_trialtype = text(.4, 1, ['Empty trial'] , 'FontSize', 12, 'Interpreter', 'none');
 else
     viz_figs.text_trialtype = text(.4, 1, ['Panel Mode: ' run_obj.panel_mode ' | Wind Mode: ' run_obj.wind_mode] , 'FontSize', 12, 'Interpreter', 'none'); %same    
 end
