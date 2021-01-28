@@ -30,11 +30,18 @@ class SocketClient(object):
 
 
         # Set up Phidget channels
+        self.aout_channel_yaw = 0
         self.aout_channel_x = 1
-        self.aout_channel_yaw = 2
+        self.aout_channel_yaw_gain = 2
         self.aout_channel_y = 3
         self.aout_max_volt = 10.0
         self.aout_min_volt = 0.0
+
+        # Setup analog output YAW
+        self.aout_yaw = VoltageOutput()
+        self.aout_yaw.setChannel(self.aout_channel_yaw)
+        self.aout_yaw.openWaitForAttachment(5000)
+        self.aout_yaw.setVoltage(0.0)
 
         # Setup analog output X
         self.aout_x = VoltageOutput()
@@ -42,11 +49,11 @@ class SocketClient(object):
         self.aout_x.openWaitForAttachment(5000)
         self.aout_x.setVoltage(0.0)
 
-        # Setup analog output YAW
-        self.aout_yaw = VoltageOutput()
-        self.aout_yaw.setChannel(self.aout_channel_yaw)
-        self.aout_yaw.openWaitForAttachment(5000)
-        self.aout_yaw.setVoltage(0.0)
+        # Setup analog output YAW gain
+        self.aout_yaw_gain = VoltageOutput()
+        self.aout_yaw_gain.setChannel(self.aout_channel_yaw_gain)
+        self.aout_yaw_gain.openWaitForAttachment(5000)
+        self.aout_yaw_gain.setVoltage(0.0)
 
         # Setup analog output Y
         self.aout_y = VoltageOutput()
@@ -135,7 +142,7 @@ class SocketClient(object):
                     # Set analog output voltage YAW
                     output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
                     self.aout_yaw.setVoltage(output_voltage_yaw) 
-
+                    self.aout_yaw_gain.setVoltage(output_voltage_yaw) 
 
                     # Set analog output voltage Y
                     wrapped_inty = self.inty % (2 * np.pi)
