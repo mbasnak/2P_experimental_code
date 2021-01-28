@@ -51,7 +51,7 @@ class SocketClientGainChange(object):
         self.aout_x.openWaitForAttachment(5000)
         self.aout_x.setVoltage(0.0)
 
-        # Setup analog output YAW
+        # Setup analog output YAW gain
         self.aout_yaw_gain = VoltageOutput()
         self.aout_yaw_gain.setChannel(self.aout_channel_yaw_gain)
         self.aout_yaw_gain.openWaitForAttachment(5000)
