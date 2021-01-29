@@ -4,45 +4,44 @@ function [smoothed] = singleTrialVelocityAnalysis(data, sampleRate)
 
 % It takes the rawData (data) and the sample rate (sampleRate) as inputs
 % and gives back a struct names "smoothed" with the 3 final velocities for
-% x, y and angular velocity.
+% x, y and angular velocity.  
 
-
-%% Downsample the position data to match FicTrac's output
-
-
-    % Downsample to match FicTrac's output
-    downsampled.Intx = resample(data.ficTracIntx,25,sampleRate); %For a 1000 rate acquisition frame rate from the NiDaq, downsampling to 25 Hz equals taking 1 every 40 frames
-    downsampled.Inty = resample(data.ficTracInty,25,sampleRate); %For a 1000 rate acquisition frame rate from the NiDaq, downsampling to 25 Hz equals taking 1 every 40 frames  
-    downsampled.angularPosition = resample(data.ficTracAngularPosition,25,sampleRate);
-    
-        
-% The output is downsampled. It isn't noticeable when plotting solid lines, and
-% it is barely noticeable when plotting dotted lines.
 
 %% Tranform signal from voltage to radians for unwrapping
 
-    downsRad.Intx = downsampled.Intx .* 2 .* pi ./ 10; %10 is for the max voltage outputed by the daq
-    downsRad.Inty = downsampled.Inty .* 2 .* pi ./ 10;
-    downsRad.angularPosition = downsampled.angularPosition .* 2 .* pi ./ 10;
+    dataRad.Intx = data.Intx .* 2 .* pi ./ 10; %10 is for the max voltage outputed by the daq
+    dataRad.Inty = data.Inty .* 2 .* pi ./ 10;
+    dataRad.angularPosition = data.angularPosition .* 2 .* pi ./ 10;
     
 
 % Now the position is going between 0 and 2 pi.
 
 %% Unwrapping 
 
-    unwrapped.Intx = unwrap(downsRad.Intx);
-    unwrapped.Inty = unwrap(downsRad.Inty);
-    unwrapped.angularPosition = unwrap(downsRad.angularPosition);
+    unwrapped.Intx = unwrap(dataRad.Intx);
+    unwrapped.Inty = unwrap(dataRad.Inty);
+    unwrapped.angularPosition = unwrap(dataRad.angularPosition);
 
 % Now the position is unwrapped, so it doesn't jump when moving from 0 to
 % 2pi and vice versa
 
 
+%% Downsample the position data to match FicTrac's output
+
+
+    % Downsample to match FicTrac's output
+    downsampled.Intx = resample(unwrapped.Intx,25,sampleRate); %For a 1000 rate acquisition frame rate from the NiDaq, downsampling to 25 Hz equals taking 1 every 40 frames
+    downsampled.Inty = resample(unwrapped.Inty,25,sampleRate); %For a 1000 rate acquisition frame rate from the NiDaq, downsampling to 25 Hz equals taking 1 every 40 frames  
+    downsampled.angularPosition = resample(unwrapped.angularPosition,25,sampleRate);
+    
+        
+% The output is downsampled. It isn't noticeable when plotting solid lines, and
+% it is barely noticeable when plotting dotted lines.
 %% Smooth the data
 
-    smoothed.Intx = smoothdata(unwrapped.Intx,'rlowess',25); 
-    smoothed.Inty = smoothdata(unwrapped.Inty,'rlowess',25); 
-    smoothed.angularPosition = smoothdata(unwrapped.angularPosition,'rlowess',25);
+    smoothed.Intx = smoothdata(downsampled.Intx,'rlowess',25); 
+    smoothed.Inty = smoothdata(downsampled.Inty,'rlowess',25); 
+    smoothed.angularPosition = smoothdata(downsampled.angularPosition,'rlowess',25);
     
      
 %% Transform to useful systems 
@@ -50,19 +49,19 @@ function [smoothed] = singleTrialVelocityAnalysis(data, sampleRate)
     deg.Intx = smoothed.Intx * 4.5; % wer tranform the pos to mm by scaling the value by the sphere's radius
     deg.Inty = smoothed.Inty * 4.5;
     deg.angularPosition = (smoothed.angularPosition / (2*pi)) * 360; % we transform the angular position to degrees
-    smoothed.degAngularPosition = wrapTo360(deg.angularPosition);
+    %subtract the initial angle from the set up (the positon 1 is actually
+    %3 pixels to the right of the fly)
+    initialPx = 3; %my x=1 positon is 3 pixels to the right of the animal
+    initialAngle = initialPx*360/96;
+    %shift according to the panels pos
+    shifted_data = deg.angularPosition - initialAngle;
+    %wrap
+    deg.angularPosition = wrapTo360(shifted_data);
+    smoothed.degAngularPosition = deg2rad(deg.angularPosition);
     
     %add position for x and y in degrees to later compute total movement
     deg.IntxDeg = rad2deg(smoothed.Intx);
     deg.IntyDeg = rad2deg(smoothed.Inty);    
-
-    %% Repeat the previous processes with the uncorrected heading for the trajectories
-    if (isfield(data,'fictracAngularPosition') == 1)
-        downsampled.AngularPosition = downsample(data.fictracAngularPosition,sampleRate/25);
-        downsRad.AngularPosition = downsampled.AngularPosition .* 2 .* pi ./ 10;
-        unwrapped.AngularPosition = unwrap(downsRad.AngularPosition);
-        smoothed.AngularPosition = smoothdata(unwrapped.AngularPosition,'rlowess',25);   
-    end
     
 %% Take the derivative
 
