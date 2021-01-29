@@ -57,7 +57,8 @@ function [smoothed] = singleTrialVelocityAnalysis(data, sampleRate)
     shifted_data = deg.angularPosition - initialAngle;
     %wrap
     deg.angularPosition = wrapTo360(shifted_data);
-    smoothed.degAngularPosition = deg2rad(deg.angularPosition);
+    smoothed.degAngularPosition = deg.angularPosition
+     smoothed.angularPosition = deg2rad(deg.angularPosition);
     
     %add position for x and y in degrees to later compute total movement
     deg.IntxDeg = rad2deg(smoothed.Intx);
