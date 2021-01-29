@@ -1,4 +1,4 @@
-function [fwd_histo, ang_histo, fly_pos_histo] = display_trial(tid, run_obj, trial_time, trial_data, session_fig, fwd_histogram, ang_histogram, fly_pos_histogram)
+function [fwd_histo, ang_histo, fly_pos_histo] = display_trial(sid, tid, run_obj, trial_time, trial_data, session_fig, fwd_histogram, ang_histogram, fly_pos_histogram)
 
 %Code to plot the trial results once the trial is complete
 
@@ -23,7 +23,7 @@ ylim(viz_figs.info_ax, [0 1]);
 
 %set up text for the figure
 viz_figs.text_expname = text( 0, 1, ['Experiment Type: ' char(run_obj.experiment_type)], 'FontSize', 12, 'Interpreter', 'none'); %viz_figs.info_ax as first arg
-viz_figs.text_sidtid = text(0, .8, ['Session ID: ' num2str(run_obj.session_id) ' | Trial ID: ' num2str(tid)], 'FontSize', 12);
+viz_figs.text_sidtid = text(0, .8, ['Session ID: ' num2str(run_obj.session_id) ' | Trial ID: ' num2str(sid)], 'FontSize', 12);
 viz_figs.text_trialtime = text(.4, .6, ['Trial duration: ' num2str(run_obj.trial_t) ' sec | ITI: ' num2str(run_obj.inter_trial_t)], 'FontSize', 12); %same
 viz_figs.text_trialtime = text(.4, .8, ['Num trials: ' num2str(run_obj.num_trials)], 'FontSize', 12);
 if (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 0) 
@@ -114,7 +114,7 @@ subplot(viz_figs.fly_trajectory)
 %import posx and posy data from the hdf5 file
 hdf5_files = dir(fullfile(run_obj.experiment_ball_dir,'*hdf5'));
 for file = 1:length(hdf5_files)
-    if contains(hdf5_files(file).name,['tid_',num2str(tid+1)])
+    if contains(hdf5_files(file).name,['sid_',num2str(sid)])
         hd5f_file_to_read = fullfile(hdf5_files(file).folder,hdf5_files(file).name);
     end
 end
