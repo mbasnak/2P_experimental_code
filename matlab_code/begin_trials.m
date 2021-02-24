@@ -47,7 +47,7 @@ save([run_obj.experiment_ball_dir '\runobj\' datestr(now, 'yyyy_mmdd_HH_MM_SS') 
 for i = 1:task_cnt
     
     %If only running panels
-    if (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 0)       
+    if (strcmp(run_obj.panel_status, 'On') == 1) && (strcmp(run_obj.wind_status, 'On') == 0)       
         cur_task = run_obj.panel_mode;
         cur_trial_corename = ['panels_' cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
         %Call the function to run the trial
@@ -55,21 +55,14 @@ for i = 1:task_cnt
         [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
         
     %If only running wind (this need to be changed)
-    elseif (strcmp(run_obj.panel_status, 'On') == 0) & (strcmp(run_obj.wind_status, 'On') == 1)        
+    elseif (strcmp(run_obj.panel_status, 'On') == 0) && (strcmp(run_obj.wind_status, 'On') == 1)        
         cur_task = run_obj.wind_mode;
         cur_trial_corename = ['wind_' cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
-        TrialType = [1 2 2 1 1 2 1 2 2 2 2 2 1 1 2 1 1 1 2 1 1 2 2 1 2 1 1 1 2 1 2 1 1 1 2 2 2 2 2 1];
-        switch TrialType(i)
-            case 1 % L->R
-                cur_task = 'WindLeftRight';
-            case 2 % R->L
-                cur_task = 'WindRightLeft';
-        end
-        cur_trial_corename = [cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
-        %[trial_bdata, trial_time] = run_wind_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
+        [trial_bdata, trial_time] = run_wind_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
+        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
         
     %If running both
-    elseif (strcmp(run_obj.panel_status, 'On') == 1) & (strcmp(run_obj.wind_status, 'On') == 1)  
+    elseif (strcmp(run_obj.panel_status, 'On') == 1) && (strcmp(run_obj.wind_status, 'On') == 1)  
         cur_task = ['panels_' run_obj.panels_mode '_wind_' run_obj.wind_mode];
         cur_trial_corename = [cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
     
@@ -98,7 +91,7 @@ if(run_obj.using_2p == 1)
 end
 
 %If using the panels, turn them off
-if(run_obj.panel_status == 'On')
+if strcmp(run_obj.panel_status, 'On')
     Panel_com('all_off');
 end
 
