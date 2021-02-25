@@ -1,0 +1,2 @@
+cd C:\src\2P_experimental_code\python_code
+python.exe run_socket_client_wind.py Spontaneous_walking 5 "C:\Users\wilson_lab\Documents\Tots\test\20210225_test\ball\hdf5_Spontaneous_walking_Closed-loop_20210225_134315_sid_0_tid_1.hdf5"

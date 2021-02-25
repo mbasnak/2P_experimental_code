@@ -62,8 +62,9 @@ delay = 2; % waiting time for the motor to get ready (s)
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
     if strcmp(run_obj.set_up, 'WLI-TOBIN')
         system(['conda activate CLwind & python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t + delay) ' "' hdf_file '" ' ' 1 &'])
+    elseif strcmp(run_obj.set_up, '2P-room')
+        system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
     end
-        %system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
 elseif (strcmp(run_obj.experiment_type,'Simulus_jump')==1)
     disp('Trial type not ready!')
 elseif (strcmp(run_obj.experiment_type,'Gain_change')==1)
