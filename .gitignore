@@ -1,1 +1,2 @@
-*.pyc
+*.pyc  # python byte code
+*.asv  # MATLAB
