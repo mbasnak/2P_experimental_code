@@ -1,2 +1,3 @@
+python_code/__pycache__
 *.pyc  # python byte code
 *.asv  # MATLAB
