@@ -68,7 +68,7 @@ class SocketClient(object):
         self.PORT = 65432         # The (receiving) host port (sock_port)
 
         # Set up Arduino connection
-        self.COM = 'COM21'  # serial port
+        self.COM = 'COM6'  # serial port
         self.baudrate = 115200  # 9600
         self.serialTimeout = 0.001 # blocking timeout for readline()
 
