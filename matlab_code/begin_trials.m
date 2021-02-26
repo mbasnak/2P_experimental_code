@@ -54,7 +54,7 @@ for i = 1:task_cnt
         [trial_bdata, trial_time] = run_panels_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
         [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
         
-    %If only running wind (this need to be changed)
+    %If only running wind
     elseif (strcmp(run_obj.panel_status, 'On') == 0) && (strcmp(run_obj.wind_status, 'On') == 1)        
         cur_task = run_obj.wind_mode;
         cur_trial_corename = ['wind_' cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
@@ -65,6 +65,10 @@ for i = 1:task_cnt
     elseif (strcmp(run_obj.panel_status, 'On') == 1) && (strcmp(run_obj.wind_status, 'On') == 1)  
         cur_task = ['panels_' run_obj.panels_mode '_wind_' run_obj.wind_mode];
         cur_trial_corename = [cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
+        
+        % currently under development
+        [trial_bdata, trial_time] = run_both_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
+        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
     
     %if not using the panels or the wind
     elseif (strcmp(run_obj.panel_status, 'On') == 0) && (strcmp(run_obj.wind_status, 'On') == 0)  
@@ -72,16 +76,7 @@ for i = 1:task_cnt
         cur_trial_corename = ['panels_' cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
         %Call the function to run the trial
         [trial_bdata, trial_time] = run_empty_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
-        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
-        
-        %     % nether panels or wind is turned on
-%     else
-%         error('Turn on panels or wind!')
-       
-        %If running both
-    else
-        cur_task = ['panels_' run_obj.panels_mode '_wind_' run_obj.wind_mode];
-        cur_trial_corename = [cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
+        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);       
     end
     
     % Save data
