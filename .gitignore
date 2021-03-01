@@ -1,2 +1,2 @@
-python_code/__pycache__
+python_code/__pycache__/*.pyc
 matlab_code/*.asv
