@@ -11,20 +11,24 @@ function s = setup_nidaq(setup_name)
 if strcmp(setup_name, '2P-room')
     s = daq.createSession('ni');
 
-    %% Dev 1 (output only)
+    %% Outputs
     s.addDigitalChannel('Dev1', 'port0/line0', 'OutputOnly'); % triggering scanimage
     s.addDigitalChannel('Dev1', 'port0/line3', 'OutputOnly'); % use the "center" valve
     
-    %% Dev 3
-    %add analog input channels
+    %% Inputs
     ai_channels_used = [1:3,11:15];
     aI = s.addAnalogInputChannel('Dev3', ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
     end
-    aI(9) = s.addAnalogInputChannel('Dev1', 12, 'Voltage'); % piezo Z
-    aI(9).InputType = 'SingleEnded';    
     
+    aI(9) = s.addAnalogInputChannel('Dev1', 12, 'Voltage'); % piezo Z
+    aI(9).InputType = 'SingleEnded';
+    
+    aI(10) = s.addAnalogInputChannel('Dev1', 14, 'Voltage'); % motor position for the wind device (from Phidget #2)
+    aI(10).InputType = 'SingleEnded';   
+    
+    %% channel references
     % Input channels:
     %
     %   Dev3:
@@ -36,8 +40,11 @@ if strcmp(setup_name, '2P-room')
     %       AI.6 = Panels y
     %       AI.7 = Panels ON/OFF
     %       AI.8 = arduino LED
-    %       AI.9 = piezo z
     %
+    %   Dev1:
+    %       AI.9 = piezo z
+    %       AI.10 = motor position
+    %       
     % Output channels:
     %
     %   Dev1:
