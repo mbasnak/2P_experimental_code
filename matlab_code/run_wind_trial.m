@@ -21,7 +21,8 @@ if strcmp(run_obj.set_up, '2P-room')
     %pre-allocate output data (imaging trigger)
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
     imaging_trigger(2:end-1) = 1.0;
-    output_data = [imaging_trigger];
+    valve_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
+    output_data = [imaging_trigger, valve_trigger];
     queueOutputData(s, output_data);
     
     % Trigger scanimage run if using 2p.
@@ -49,13 +50,6 @@ cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename 
 hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 
 %% start the trial
-% start = run_obj.start_pos;
-% if ( strcmp(task, 'Closed_Loop') == 1 )
-%     closedLoop(run_obj.pattern_number, start);
-% elseif ( strcmp(task, 'Open_Loop') == 1 )
-%     openLoop(run_obj.pattern_number, run_obj.function_number);
-% end
-
 delay = 2; % waiting time for the motor to get ready (s)
 
 %Run the python script that runs fictrac and other experimental conditions
