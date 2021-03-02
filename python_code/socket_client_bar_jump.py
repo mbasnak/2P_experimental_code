@@ -75,7 +75,7 @@ class SocketClientBarJump(object):
         self.heading_with_gain = 0
 
         self.jump = True
-        self.time_between_jumps = 10
+        self.time_between_jumps = 90
         self.jump_size = 0
 
         #set up logger to save hd5f file
@@ -159,7 +159,7 @@ class SocketClientBarJump(object):
                     #set value depending on how much time has elapsed
                     if ((self.time_elapsed > 1) and ((math.floor(self.time_elapsed)%self.time_between_jumps)==0) and (self.jump == True)):
                         #choose randomly between -120 and 120 jumps
-                        self.jump_size = random.choice(radians(-120),radians(120))
+                        self.jump_size = random.choice([math.radians(-120),math.radians(120)])
                         self.jump = False
                     else:
                     	self.jump_size = 0
