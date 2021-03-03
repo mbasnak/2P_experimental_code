@@ -63,7 +63,7 @@ for i = 1:task_cnt
         
     %If running both
     elseif (strcmp(run_obj.panel_status, 'On') == 1) && (strcmp(run_obj.wind_status, 'On') == 1)  
-        cur_task = ['panels_' run_obj.panels_mode '_wind_' run_obj.wind_mode];
+        cur_task = ['panels_' run_obj.panel_mode '_wind_' run_obj.wind_mode];
         cur_trial_corename = [cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
         
         % currently under development
