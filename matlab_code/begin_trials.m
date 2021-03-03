@@ -68,7 +68,7 @@ for i = 1:task_cnt
         
         % currently under development
         [trial_bdata, trial_time] = run_both_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
-        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
+        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial_both(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
     
     %if not using the panels or the wind
     elseif (strcmp(run_obj.panel_status, 'On') == 0) && (strcmp(run_obj.wind_status, 'On') == 0)  
