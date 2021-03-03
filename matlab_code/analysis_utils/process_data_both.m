@@ -14,7 +14,7 @@ settings.fictrac_y_DAQ_AI = 2;
 
 settings.panels_x_DAQ_AI = 5;
 settings.panels_y_DAQ_AI = 6;
-
+settings.motor_DAQ_AI = 10;
 
 data.Intx = trial_data( :, settings.fictrac_x_DAQ_AI ); %data from x channel
 data.angularPosition = trial_data( :, settings.fictrac_yaw_gain_DAQ_AI ); 
@@ -30,7 +30,12 @@ vel_yaw = smoothed.angularVel;
 panels = trial_data( :, settings.panels_x_DAQ_AI ); %data from the x dimension in panels
 fly_pos = smoothed.degAngularPosition;
 [stim_pos_vis] = process_panel_360(panels, num_x_pixels); %returns filtered and downsampled panel px data as well as calculated angle of the bar
-[ t ] = resample(trial_time, 25, settings.sampRate); %downsamples the time
+[ t ] = resample_new(trial_time, 25, settings.sampRate); %downsamples the time
+
+downsampled.motor = resample_new(data.motor, sampRate_new, settings.sampRate);
+downsRad.motor = downsampled.motor .* 2 .* pi ./ 10; % from voltage to radian
+downsDeg.motor = downsRad.motor .* 360 ./ (2 * pi); 
+stim_pos = downsDeg.motor;
 
 end
 
