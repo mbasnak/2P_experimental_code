@@ -43,15 +43,16 @@ cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename 
 hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 
 %% Configure Panels
+ 
 start = run_obj.start_pos;
-if ( strcmp(task, 'Closed_Loop') == 1 )
+if ( strcmp(task, 'Closed_Loop') == 1 )  
     closedLoop(run_obj.pattern_number, start);
 elseif ( strcmp(task, 'Open_Loop') == 1 )
     openLoop(run_obj.pattern_number, run_obj.function_number);
 elseif ( strcmp(task, 'Closed_Loop_X_Open_Loop_Y') == 1)
-    closedOpenLoop(run_obj.pattern_number, run_obj.function_number, start);
+    closedOpenLoop(run_obj.pattern_number, run_obj.function_number, start); 
 elseif ( strcmp(task, 'Closed_Loop_X_Closed_Loop_Y') == 1)
-    closedClosedLoop(run_obj.pattern_number, start);
+    closedClosedLoop(run_obj.pattern_number, start); 
 end
 
 %% Start panels

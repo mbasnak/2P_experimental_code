@@ -59,7 +59,7 @@ for i = 1:task_cnt
         cur_task = run_obj.wind_mode;
         cur_trial_corename = ['wind_' cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
         [trial_bdata, trial_time] = run_wind_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
-        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
+        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial_both(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
         
     %If running both
     elseif (strcmp(run_obj.panel_status, 'On') == 1) && (strcmp(run_obj.wind_status, 'On') == 1)  
