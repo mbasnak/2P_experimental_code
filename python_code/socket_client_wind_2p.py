@@ -227,8 +227,11 @@ class SocketClient(object):
                         self.done = True
                         break
 
+            # go back to 0 deg at the end of the trial            
+            arduino_str = "H " + str(0) + "\n"  # "H is a command used in the Arduino code to indicate heading
+            arduino_byte = arduino_str.encode()  # convert unicode string to byte string       
+            ser.write(arduino_byte)  # send to serial port            
             print('Trial finished - quitting!')
-
 
     #define function to log data to hdf5 file
     def write_logfile_fictrac(self):

@@ -31,37 +31,55 @@ class SocketClient(object):
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
         self.wind_dir = self.param['wind_dir']
 
-        # Set up Phidget channels (0-index)
-        self.aout_channel_motor = 0  # for sending the motor position to the NI-DAQ thorugh Phidget
+        # Set up Phidget serial numbers for using two devices
+        self.phidget_vision = 525577  # written on the back of the Phidget
+        self.phidget_wind = 589946  # for sending the position of the motor to NI-DAQ
+
+        # Set up Phidget channels in device 1 for vision (0-index)
+        self.aout_channel_yaw = 0
         self.aout_channel_x = 1
-        self.aout_channel_yaw = 2
-        self.aout_channel_y = 3     
+        self.aout_channel_yaw_gain = 2
+        self.aout_channel_y = 3
         self.aout_max_volt = 10.0
         self.aout_min_volt = 0.0
 
-        # Setup analog output motor
-        self.aout_motor = VoltageOutput()
-        self.aout_motor.setChannel(self.aout_channel_motor)
-        self.aout_motor.openWaitForAttachment(5000)
-        self.aout_motor.setVoltage(0.0)
-
-        # Setup analog output X
-        self.aout_x = VoltageOutput()
-        self.aout_x.setChannel(self.aout_channel_x)
-        self.aout_x.openWaitForAttachment(5000)
-        self.aout_x.setVoltage(0.0)
-
         # Setup analog output YAW
         self.aout_yaw = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
         self.aout_yaw.setChannel(self.aout_channel_yaw)
         self.aout_yaw.openWaitForAttachment(5000)
         self.aout_yaw.setVoltage(0.0)
 
+        # Setup analog output X
+        self.aout_x = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
+        self.aout_x.setChannel(self.aout_channel_x)
+        self.aout_x.openWaitForAttachment(5000)
+        self.aout_x.setVoltage(0.0)
+
+        # Setup analog output YAW gain
+        self.aout_yaw_gain = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
+        self.aout_yaw_gain.setChannel(self.aout_channel_yaw_gain)
+        self.aout_yaw_gain.openWaitForAttachment(5000)
+        self.aout_yaw_gain.setVoltage(0.0)
+
         # Setup analog output Y
         self.aout_y = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
         self.aout_y.setChannel(self.aout_channel_y)
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(0.0)
+
+        # Set up Phidget channels in device 2 for wind (0-index)
+        self.aout_channel_motor = 0
+
+        # Setup analog output motor
+        self.aout_motor = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_wind)
+        self.aout_motor.setChannel(self.aout_channel_motor)
+        self.aout_motor.openWaitForAttachment(5000)
+        self.aout_motor.setVoltage(0.0)
 
         self.print = True
 
@@ -188,6 +206,7 @@ class SocketClient(object):
                     # Set analog output voltage YAW
                     output_voltage_yaw = (self.heading) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
                     self.aout_yaw.setVoltage(output_voltage_yaw) 
+                    self.aout_yaw_gain.setVoltage(output_voltage_yaw)  
 
                     # Set analog output voltage Y
                     wrapped_inty = self.inty % (2 * np.pi)
