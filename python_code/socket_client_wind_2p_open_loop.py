@@ -20,7 +20,6 @@ class SocketClient(object):
         'logfile_auto_incr': True,
         'logfile_auto_incr_format': '{0:06d}',
         'logfile_dt': 0.01,
-        'wind_dir': None
     }
 
     def __init__(self, param=DefaultParam):
@@ -29,7 +28,11 @@ class SocketClient(object):
         self.experiment = self.param['experiment']
         self.experiment_time = self.param['experiment_time']
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
-        self.wind_dir = self.param['wind_dir']
+
+        # set up open-loop wind (hard coded for now...)
+        self.wind_dur = 4  # duration of wind stimulus per direction (s)
+        self.wind_counter = 0  # counter for keeping track which wind diretion is currently specified
+        self.wind_list = range(0, 360, 30)
 
         # Set up Phidget serial numbers for using two devices
         self.phidget_vision = 525577  # written on the back of the Phidget
@@ -88,7 +91,7 @@ class SocketClient(object):
         self.PORT = 65432         # The (receiving) host port (sock_port)
 
         # Set up Arduino connection
-        self.COM = 'COM4'  # serial port
+        self.COM = 'COM15'  # serial port
         self.baudrate = 115200  # 9600
         self.serialTimeout = 0.001 # blocking timeout for readline()
 
@@ -192,11 +195,6 @@ class SocketClient(object):
                     self.inty = float(toks[21])  # integrated y position (rad) of the sphere in lab coord neglecting heading
                     self.timestamp = float(toks[22])  # frame capture time (ms) since epoch
 
-                    # send the wind direction to Arduino
-                    arduino_str = "H " + str(self.wind_dir) + "\n"  # "H is a command used in the Arduino code to indicate heading
-                    arduino_byte = arduino_str.encode()  # convert unicode string to byte string
-                    ser.write(arduino_byte)  # send to serial port  
-
                     ## Set Phidget voltages using FicTrac data
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))                   
@@ -216,11 +214,24 @@ class SocketClient(object):
                     # Save fictrac data in HDF5 file
                     self.write_logfile_fictrac() 
 
+                    # open-loop wind
+                    if self.time_elapsed > self.wind_dur * self.wind_counter:
+                        if self.wind_counter >= len(self.wind_list):
+                            break
+                        current_wind_dir = self.wind_list[self.wind_counter]
+                        
+                        # send the wind direction to Arduino
+                        arduino_str = "H " + str(current_wind_dir) + "\n"  # "H is a command used in the Arduino code to indicate heading
+                        arduino_byte = arduino_str.encode()  # convert unicode string to byte string
+                        ser.write(arduino_byte)  # send to serial port     
+                        
+                        print(f'wind dir: {current_wind_dir}')
+                        self.wind_counter += 1  # go to the next wind direction
+                        
                     # Display status message
                     if self.print:
                         print(f'time elapsed: {self.time_elapsed: 1.3f}', end='')
-                        #print(f'  heading: {animal_heading_360:3.0f}', end='')
-                        print(f'  motor pos: {motor_pos:3.0f}')
+                        print(f'\t motor pos: {motor_pos:3.0f}')
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True

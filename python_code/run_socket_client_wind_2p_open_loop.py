@@ -3,16 +3,15 @@ import sys
 sys.path.insert(0, os.path.abspath(r'C:/Users/Tots/Documents/GitHub/2P_experimental_code/python_code'))
 from socket_client_wind_2p_open_loop import SocketClient
 
-def experiment_code(experiment=None, time=3, logfile=None, wind_dir=0):
+def experiment_code(experiment=None, time=60, logfile=None):
 
     experiment_param = {
         'experiment': experiment, # experiment type
         'experiment_time': time, # trial duration (s)
-        'logfile_name': logfile or 'C:/Users/Tots/Documents/FlyOnTheBall/data/data.hdf5', 
+        'logfile_name': logfile or 'C:/Users/wilson_lab/Documents/Tots/test/test.hdf5', 
         'logfile_auto_incr': False,
         'logfile_auto_incr_format': '{0:06d}',
         'logfile_dt': 0.01,
-        'wind_dir': wind_dir
     }
     client = SocketClient(experiment_param)
     client.run()
