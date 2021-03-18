@@ -30,7 +30,6 @@ if __name__ == '__main__':
         experiment = sys.argv[1] #make the first argument be the experiment...
         time = float(sys.argv[2]) #...etc
         logfile = sys.argv[3]
-        wind_dir = sys.argv[4]  # wind coming from a fixed direction [deg]
-        experiment_code(experiment, time, logfile, wind_dir)
+        experiment_code(experiment, time, logfile)
     else:  # no command line argument provided
         experiment_code()
