@@ -22,7 +22,7 @@ if strcmp(run_obj.set_up, '2P-room')
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
     imaging_trigger(2:end-1) = 1.0;
     valve_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
-    output_data = [imaging_trigger, valve_trigger];
+    output_data = [imaging_trigger, valve_trigger, valve_trigger];
     queueOutputData(s, output_data);
     
     % Trigger scanimage run if using 2p.
@@ -50,7 +50,7 @@ cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename 
 hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 
 %% start the trial
-delay = 2; % waiting time for the motor to get ready (s)
+delay = 1; % waiting time for the motor to get ready (s)
 
 %Run the python script that runs fictrac and other experimental conditions
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)

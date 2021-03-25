@@ -13,7 +13,7 @@ if strcmp(setup_name, '2P-room')
 
     %% Outputs
     s.addDigitalChannel('Dev1', 'port0/line0', 'OutputOnly'); % triggering scanimage
-    s.addDigitalChannel('Dev1', 'port0/line3', 'OutputOnly'); % use the "center" valve
+    s.addDigitalChannel('Dev1', 'port0/line1:2', 'OutputOnly'); % use the "master and the "left" valve
     
     %% Inputs
     ai_channels_used = [1:3,11:15];
