@@ -13,8 +13,8 @@ s = daq.createSession('ni');
 % This channel is for external triggering of scanimage 5.1
 s.addDigitalChannel('Dev1', 'port0/line0', 'OutputOnly');
 %add analog input channels
-ai_channels_used = [1:3,11:15];
-aI = s.addAnalogInputChannel('Dev3', ai_channels_used, 'Voltage');
+ai_channels_used = [1:3,5,11,13];
+aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
 for i=1:length(ai_channels_used)
     aI(i).InputType = 'SingleEnded';
 end
