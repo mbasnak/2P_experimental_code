@@ -10,10 +10,10 @@ disp(['About to start trial task: ' task]);
 % Setup data structures for read / write on the daq board
 s = daq.createSession('ni');
 
-% This channel is for external triggering of scanimage 5.1
-s.addDigitalChannel('Dev1', 'port0/line0', 'OutputOnly');
+s.addDigitalChannel('Dev1', 'port0/line0', 'OutputOnly'); % triggering of scanimage 5.1
+
 %add analog input channels
-ai_channels_used = [1:3,5,11:13];
+ai_channels_used = [1:3,5,11:14];
 aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
 for i=1:length(ai_channels_used)
     aI(i).InputType = 'SingleEnded';
@@ -30,12 +30,12 @@ end
 %       AI.5 = Fictrac x
 %       AI.6 = piezo z
 %       AI.7 = Panels y
+%       AI.8 = motor position
 %
 % Output channels:
 %
 %   Dev1:
 %       P0.0 = external trigger for scanimage
-%
 
 %establish the acquisition rate and duration
 settings = sensor_settings;
