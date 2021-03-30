@@ -13,13 +13,12 @@ s = daq.createSession('ni');
 % This channel is for external triggering of scanimage 5.1
 s.addDigitalChannel('Dev1', 'port0/line0', 'OutputOnly');
 %add analog input channels
-ai_channels_used = [1:3,5,11,13];
+ai_channels_used = [1:3,5,11:13];
 aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
 for i=1:length(ai_channels_used)
     aI(i).InputType = 'SingleEnded';
 end
-aI(9) = s.addAnalogInputChannel('Dev1', 12, 'Voltage');
-aI(9).InputType = 'SingleEnded';
+
 
 % Input channels:
 %
@@ -27,12 +26,10 @@ aI(9).InputType = 'SingleEnded';
 %       AI.1 = Fictrac yaw gain
 %       AI.2 = Fictrac y
 %       AI.3 = Fictrac yaw
-%       AI.4 = Fictrac x
-%       AI.5 = Panels x
-%       AI.6 = Panels y
-%       AI.7 = Panels ON/OFF
-%       AI.8 = arduino LED
-%       AI.9 = piezo z
+%       AI.4 = Panels x 
+%       AI.5 = Fictrac x
+%       AI.6 = piezo z
+%       AI.7 = Panels y
 %
 % Output channels:
 %

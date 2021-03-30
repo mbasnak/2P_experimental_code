@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath('C:/src/experimental_code/python_code'))
+sys.path.insert(0, os.path.abspath('C:/Users/WilsonLab/Desktop/FicTrac_Experiments/2P_experimental_code/python_code'))
 from socket_client_bar_jump import SocketClientBarJump
 
 def experiment_code(experiment=None, time=None, logfile=None):

@@ -37,26 +37,34 @@ class SocketClient(object):
         self.aout_max_volt = 10.0
         self.aout_min_volt = 0.0
 
+        # Set up Phidget serial numbers for using two devices
+        self.phidget_vision = 525577  # written on the back of the Phidget
+        self.phidget_wind = 589946  # for sending the position of the motor to NI-DAQ
+
         # Setup analog output YAW
         self.aout_yaw = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
         self.aout_yaw.setChannel(self.aout_channel_yaw)
         self.aout_yaw.openWaitForAttachment(5000)
         self.aout_yaw.setVoltage(0.0)
 
         # Setup analog output X
         self.aout_x = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
         self.aout_x.setChannel(self.aout_channel_x)
         self.aout_x.openWaitForAttachment(5000)
         self.aout_x.setVoltage(0.0)
 
         # Setup analog output YAW gain
         self.aout_yaw_gain = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
         self.aout_yaw_gain.setChannel(self.aout_channel_yaw_gain)
         self.aout_yaw_gain.openWaitForAttachment(5000)
         self.aout_yaw_gain.setVoltage(0.0)
 
         # Setup analog output Y
         self.aout_y = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
         self.aout_y.setChannel(self.aout_channel_y)
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(0.0)
@@ -65,6 +73,7 @@ class SocketClient(object):
 
         # Set up socket info
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
+        #self.HOST = '10.119.97.141'
         self.PORT = 65432         # The (receiving) host port (sock_port)
 
         self.done = False
