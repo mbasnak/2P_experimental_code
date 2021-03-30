@@ -50,21 +50,21 @@ class SocketClient(object):
 
         # Setup analog output X
         self.aout_x = VoltageOutput()
-        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
+        self.aout_x.setDeviceSerialNumber(self.phidget_vision)
         self.aout_x.setChannel(self.aout_channel_x)
         self.aout_x.openWaitForAttachment(5000)
         self.aout_x.setVoltage(0.0)
 
         # Setup analog output YAW gain
         self.aout_yaw_gain = VoltageOutput()
-        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
+        self.aout_yaw_gain.setDeviceSerialNumber(self.phidget_vision)
         self.aout_yaw_gain.setChannel(self.aout_channel_yaw_gain)
         self.aout_yaw_gain.openWaitForAttachment(5000)
         self.aout_yaw_gain.setVoltage(0.0)
 
         # Setup analog output Y
         self.aout_y = VoltageOutput()
-        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
+        self.aout_y.setDeviceSerialNumber(self.phidget_vision)
         self.aout_y.setChannel(self.aout_channel_y)
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(0.0)
@@ -193,4 +193,4 @@ class SocketClient(object):
                 'inty': self.inty,
                 'heading': self.heading
             }
-            self.logger.add(log_data)
+            #self.logger.add(log_data)
