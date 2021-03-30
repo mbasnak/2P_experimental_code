@@ -193,4 +193,4 @@ class SocketClient(object):
                 'inty': self.inty,
                 'heading': self.heading
             }
-            #self.logger.add(log_data)
+            self.logger.add(log_data)
