@@ -16,18 +16,12 @@ if strcmp(setup_name, '2P-room')
     s.addDigitalChannel('Dev1', 'port0/line1:2', 'OutputOnly'); % use the "master and the "left" valve
     
     %% Inputs
-    ai_channels_used = [1:3,11:15];
-    aI = s.addAnalogInputChannel('Dev3', ai_channels_used, 'Voltage');
+    ai_channels_used = [1:3, 5, 11:14];
+    aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
     end
-    
-    aI(9) = s.addAnalogInputChannel('Dev1', 12, 'Voltage'); % piezo Z
-    aI(9).InputType = 'SingleEnded';
-    
-    aI(10) = s.addAnalogInputChannel('Dev1', 14, 'Voltage'); % motor position for the wind device (from Phidget #2)
-    aI(10).InputType = 'SingleEnded';   
-    
+        
     %% channel references
     % Input channels:
     %
