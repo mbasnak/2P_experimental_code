@@ -64,7 +64,7 @@ elseif strcmp(setup_name, 'WLI-TOBIN')
     %add analog input channels
     ai_channels_used = 1:6;
     aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
-    dO = s.addDigitalChannel('Dev1', ['port0/line0:1'], 'OutputOnly'); % solenoid valves
+    dO = s.addDigitalChannel('Dev1', ['port0/line1:2'], 'OutputOnly'); % master and left solenoid valves
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
     end
