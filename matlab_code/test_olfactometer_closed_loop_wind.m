@@ -15,7 +15,7 @@ PreDur = 1; % (s)
 PostDur = 1; % (s)
 
 PulseDur = 1; %[s]
-N_repeat = 10;
+N_repeat = 3;
 
 %% setup DAQ
 daqreset
