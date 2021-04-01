@@ -31,7 +31,7 @@ class SocketClient(object):
 
         # set up open-loop wind (hard coded for now...)
         self.wind_dur = 5  # duration of wind stimulus per direction (s)
-        self.wind_counter = 0  # counter for keeping track which wind diretion is currently specified
+        self.wind_counter = 0  # counter for keeping track which wind direction is currently specified
         self.wind_list = range(0, 360, 60)
 
         # Set up Phidget serial numbers for using two devices

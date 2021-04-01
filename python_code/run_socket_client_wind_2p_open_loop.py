@@ -8,7 +8,7 @@ def experiment_code(experiment=None, time=60, logfile=None):
     experiment_param = {
         'experiment': experiment, # experiment type
         'experiment_time': time, # trial duration (s)
-        'logfile_name': logfile or 'C:/Users/wilson_lab/Documents/Tots/test/test.hdf5', 
+        'logfile_name': logfile or 'C:/Users/WilsonLab/Documents/Tots/test/test.hdf5', 
         'logfile_auto_incr': False,
         'logfile_auto_incr_format': '{0:06d}',
         'logfile_dt': 0.01,
