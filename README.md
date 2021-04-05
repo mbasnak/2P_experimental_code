@@ -11,7 +11,7 @@ This code has been tested using
 - AI1: yaw gain
 - AI2: y
 - AI3: yaw
-- AI4: frame clock
+- (AI4: frame clock, unused)
 - AI5: xdim panels
 - AI11: x
 - AI12: piezo Z
