@@ -17,3 +17,17 @@ This code has been tested using
 - AI12: piezo Z
 - AI13: ydim panels
 - AI14: motor position
+
+| NI-DAQ channel | MATLAB | Description |
+| ----------- | ----------- | ----------- |
+| AI1 | 1 | yaw gain |
+| AI2 | 2 | y |
+| AI3 | 3 | yaw |
+| AI4 | N.A.| frame clock (unused)|
+| AI5 | 4 | x dim panels |
+| AI11 | 5 | x |
+| AI12 | 6 | piezo Z |
+| AI13 | 7 | y dim panels |
+| AI14 | 8 | motor position |
+
+
