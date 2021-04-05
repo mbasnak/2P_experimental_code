@@ -7,16 +7,8 @@ This code has been tested using
 - MATLAB 2020b
 - Python 3.7.4
 
-## NI-DAQ channel information (2021/04/05 updated)
-- AI1: yaw gain
-- AI2: y
-- AI3: yaw
-- (AI4: frame clock, unused)
-- AI5: xdim panels
-- AI11: x
-- AI12: piezo Z
-- AI13: ydim panels
-- AI14: motor position
+## NI-DAQ channel information
+2021/04/05 updated
 
 | NI-DAQ channel | MATLAB | Description |
 | ----------- | ----------- | ----------- |
@@ -29,5 +21,3 @@ This code has been tested using
 | AI12 | 6 | piezo Z |
 | AI13 | 7 | y dim panels |
 | AI14 | 8 | motor position |
-
-
