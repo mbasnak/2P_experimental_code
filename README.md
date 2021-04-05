@@ -10,8 +10,8 @@ This code has been tested using
 ## NI-DAQ channel information
 2021/04/05 updated
 
-| NI-DAQ channel | MATLAB | Description |
-| ----------- | ----------- | ----------- |
+| NI-DAQ  | MATLAB | Description |
+| ------- |------- | ----------- |
 | AI1 | 1 | yaw gain |
 | AI2 | 2 | y |
 | AI3 | 3 | yaw |
