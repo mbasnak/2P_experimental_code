@@ -14,8 +14,8 @@ Fs = 4000;  % sampling rate (Hz)
 PreDur = 1; % (s)
 PostDur = 1; % (s)
 
-PulseDur = 1; %[s]
-N_repeat = 3;
+PulseDur = 30; %[s]
+N_repeat = 1;
 
 %% setup DAQ
 daqreset

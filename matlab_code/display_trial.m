@@ -110,26 +110,26 @@ g = get(viz_figs.circular_fly, 'OuterPosition');
 set(viz_figs.circular_fly, 'OuterPosition', [g(1) g(2) .34 .34]);
 
 %Fly 2d trajectory
-subplot(viz_figs.fly_trajectory)
-%import posx and posy data from the hdf5 file
-hdf5_files = dir(fullfile(run_obj.experiment_ball_dir,'*hdf5'));
-for file = 1:length(hdf5_files)
-    if contains(hdf5_files(file).name,['sid_',num2str(sid)])
-        hd5f_file_to_read = fullfile(hdf5_files(file).folder,hdf5_files(file).name);
-    end
-end
-posx = h5read(hd5f_file_to_read,'/posx');
-posy = h5read(hd5f_file_to_read,'/posy');
-time = h5read(hd5f_file_to_read,'/time');
-ball_radius = 4.5; %we need to scale the variables by the ball radius for the true position
-% if (strcmp(run_obj.experiment_type,'Gain_change')==1) %if it's a gain change experiment
-%     gain = h5read(hd5f_file_to_read,'/gain_yaw');
-%     scatter(ball_radius*posx,ball_radius*posy,4.5,gain) %color according to the gain
-% else
-    scatter(ball_radius*posx,ball_radius*posy,4.5,time)
-%end
-colorbar
-title('Fly trajectory');
+% subplot(viz_figs.fly_trajectory)
+% %import posx and posy data from the hdf5 file
+% hdf5_files = dir(fullfile(run_obj.experiment_ball_dir,'*hdf5'));
+% for file = 1:length(hdf5_files)
+%     if contains(hdf5_files(file).name,['sid_',num2str(sid)])
+%         hd5f_file_to_read = fullfile(hdf5_files(file).folder,hdf5_files(file).name);
+%     end
+% end
+% posx = h5read(hd5f_file_to_read,'/posx');
+% posy = h5read(hd5f_file_to_read,'/posy');
+% time = h5read(hd5f_file_to_read,'/time');
+% ball_radius = 4.5; %we need to scale the variables by the ball radius for the true position
+% % if (strcmp(run_obj.experiment_type,'Gain_change')==1) %if it's a gain change experiment
+% %     gain = h5read(hd5f_file_to_read,'/gain_yaw');
+% %     scatter(ball_radius*posx,ball_radius*posy,4.5,gain) %color according to the gain
+% % else
+%     scatter(ball_radius*posx,ball_radius*posy,4.5,time)
+% %end
+% colorbar
+% title('Fly trajectory');
 
 
 %% Update the session figure
