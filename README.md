@@ -6,3 +6,18 @@ Code to run fictrac trials while imaging and delivering visual or wind stimuli
 This code has been tested using
 - MATLAB 2020b
 - Python 3.7.4
+
+## NI-DAQ channel information
+2021/04/05 updated
+
+| NI-DAQ  | MATLAB | Description |
+| ------- |------- | ----------- |
+| AI1 | 1 | yaw gain |
+| AI2 | 2 | y |
+| AI3 | 3 | yaw |
+| AI4 | N.A.| frame clock (unused)|
+| AI5 | 4 | x dim panels |
+| AI11 | 5 | x |
+| AI12 | 6 | piezo Z |
+| AI13 | 7 | y dim panels |
+| AI14 | 8 | motor position |
