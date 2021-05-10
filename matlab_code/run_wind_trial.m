@@ -17,12 +17,18 @@ s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 total_duration = run_obj.trial_t; %trial duration taken from the GUI input
 
 %% prepare outputs
+flow_rate = 0.2; % [L/min] (range 0-2 L/min)
+if flow_rate > 2
+    error('Flow rate needs to be within 0-2 L/min')
+end
+
 if strcmp(run_obj.set_up, '2P-room')
-    %pre-allocate output data (imaging trigger)
+    MFC_trigger = (flow_rate / 2) * 5 * ones(SAMPLING_RATE*total_duration,1); % 
+    MFC_trigger(end) = 0; % turn off air at the end of the trial
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
     imaging_trigger(2:end-1) = 1.0;
     valve_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
-    output_data = [imaging_trigger, valve_trigger, valve_trigger];
+    output_data = [MFC_trigger, imaging_trigger, valve_trigger, valve_trigger];
     queueOutputData(s, output_data);
     
     % Trigger scanimage run if using 2p.
