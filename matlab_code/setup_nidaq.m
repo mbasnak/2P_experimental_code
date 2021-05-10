@@ -6,24 +6,26 @@ function s = setup_nidaq(setup_name)
 %%%     NI-DAQ object
 %%% Tatsuo Okubo
 %%% 2021-01-07
-%%% 2021-03-01: modified
+%%% 2021-05-10: modified
 
 if strcmp(setup_name, '2P-room')
+    Dev = 'Dev1';
     s = daq.createSession('ni');
 
     %% Outputs
-    s.addDigitalChannel('Dev1', 'port0/line0', 'OutputOnly'); % triggering scanimage
-    s.addDigitalChannel('Dev1', 'port0/line1:2', 'OutputOnly'); % use the "master and the "left" valve
+    s.addAnalogOutputChannel(Dev, 'ao0', 'Voltage'); % mass flow controller
+    s.addDigitalChannel(Dev, 'port0/line0', 'OutputOnly'); % triggering scanimage
+    s.addDigitalChannel(Dev, 'port0/line1:2', 'OutputOnly'); % use the "master and the "left" valve
     
     %% Inputs
-    ai_channels_used = [1:3, 5, 11:14];
-    aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
+    ai_channels_used = [1:3, 5, 11:15];
+    aI = s.addAnalogInputChannel(Dev, ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
     end
         
-    %% channel references
-    % Input channels:
+%% channel references
+% Input channels (MATLAB channel number, not what's on NI-DAQ):
 %
 %   Dev1:
 %       AI.1 = Fictrac yaw gain
@@ -34,10 +36,12 @@ if strcmp(setup_name, '2P-room')
 %       AI.6 = piezo z
 %       AI.7 = Panels y
 %       AI.8 = motor position
+%       AI.9 = mass flow controller (0-5V corresponds to 0-2L/min)
 %
 % Output channels:
 %
 %   Dev1:
+%       AO.0 = mass flow controller (0-5V corresponds to 0-2L/min)
 %       P0.0 = external trigger for scanimage
 %       P0.1-2 = trigger for wind delivery (i.e. pinch valve in the olfactometer)       
     
