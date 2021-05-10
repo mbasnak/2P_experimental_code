@@ -11,7 +11,7 @@ This code has been tested using
 2021/05/10 updated
 
 | NI-DAQ  | MATLAB | Description | Notes |
-| ------- |------- | ----------- | ----- |
+| ------- |:------:| ----------- | ----- |
 | AI1 | 1 | yaw gain ||
 | AI2 | 2 | y ||
 | AI3 | 3 | yaw ||
