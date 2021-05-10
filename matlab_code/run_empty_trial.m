@@ -67,11 +67,11 @@ cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename 
 hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
         
 % Run the python script that runs fictrac and other experimental conditions
- system(['python run_socket_client.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
-
-%Start the data acquisition
+%system(['python run_socket_client.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+        
+ %Start the data acquisition
 [trial_data, trial_time] = s.startForeground(); %gets data and timestamps for the NiDaq acquisition
-
+ 
 system('exit');
 release(s);
 
