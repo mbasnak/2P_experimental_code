@@ -18,7 +18,7 @@ total_duration = run_obj.trial_t; %trial duration taken from the GUI input
 
 %% prepare outputs
 
-flow_rate = run_obj.airflow; % [L/min] (range 0-2 L/min)
+flow_rate = run_obj.airflow.Value; % [L/min] (range 0-2 L/min)
 
 if strcmp(run_obj.set_up, '2P-room')
     MFC_trigger = (flow_rate / 2) * 5 * ones(SAMPLING_RATE*total_duration,1); %convert the airflow signal to voltage
@@ -48,6 +48,7 @@ elseif strcmp(run_obj.set_up, 'WLI-TOBIN')
 end
 
 %% prepare file names
+
 experiment_type = run_obj.experiment_type;
 cur_trial_corename = [experiment_type '_' task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(run_obj.session_id) '_tid_' num2str(tid)];
 cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename '.hdf5' ];

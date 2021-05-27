@@ -18,7 +18,7 @@ if strcmp(setup_name, '2P-room')
     s.addDigitalChannel(Dev, 'port0/line1:2', 'OutputOnly'); % use the "master and the "left" valve
     
     %% Inputs
-    ai_channels_used = [1:3, 5, 11:15];
+    ai_channels_used = [1:3, 5, 10:15];
     aI = s.addAnalogInputChannel(Dev, ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
