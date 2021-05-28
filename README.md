@@ -17,7 +17,7 @@ This code has been tested using
 | AI3 | 3 | yaw ||
 | AI4 | N.A.| frame clock (unused)||
 | AI5 | 4 | x dim panels ||
-| AI15 | 5 | mass flow controller (monitor) | 0-5V corresponds to 0-2L/min |
+| AI10 | 5 | mass flow controller (monitor) | 0-5V corresponds to 0-2L/min |
 | AI11 | 6 | x ||
 | AI12 | 7 | piezo Z ||
 | AI13 | 8 | y dim panels ||
