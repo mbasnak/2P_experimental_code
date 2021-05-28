@@ -14,11 +14,10 @@ if strcmp(setup_name, '2P-room')
 
     %% Outputs
     s.addAnalogOutputChannel(Dev, 'ao0', 'Voltage'); % mass flow controller
-    s.addDigitalChannel(Dev, 'port0/line0', 'OutputOnly'); % triggering scanimage
-    s.addDigitalChannel(Dev, 'port0/line1:2', 'OutputOnly'); % use the "master and the "left" valve
+    s.addDigitalChannel(Dev, 'port0/line0:1', 'OutputOnly'); % scanimage trigger, valve trigger for MFC
     
     %% Inputs
-    ai_channels_used = [1:3, 5, 10:15];
+    ai_channels_used = [1:5, 10:14];
     aI = s.addAnalogInputChannel(Dev, ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
@@ -28,22 +27,23 @@ if strcmp(setup_name, '2P-room')
 % Input channels (MATLAB channel number, not what's on NI-DAQ):
 %
 %   Dev1:
-%       AI.1 = Fictrac yaw gain
+%       AI.1 = Fictrac x
 %       AI.2 = Fictrac y
 %       AI.3 = Fictrac yaw
-%       AI.4 = Panels x 
-%       AI.5 = Fictrac x
-%       AI.6 = piezo z
-%       AI.7 = Panels y
+%       AI.4 = Panels yaw gain
+%       AI.5 = panels x
+%       AI.6 = panels y
+%       AI.7 = Piezo Z
 %       AI.8 = motor position
-%       AI.9 = mass flow controller (0-5V corresponds to 0-2L/min)
+%       AI.9 = mass flow controller (copy of control)
+%       AI.10 = mass flow controller (monitor) 
 %
 % Output channels:
 %
 %   Dev1:
 %       AO.0 = mass flow controller (0-5V corresponds to 0-2L/min)
 %       P0.0 = external trigger for scanimage
-%       P0.1-2 = trigger for wind delivery (i.e. pinch valve in the olfactometer)       
+%       P0.1 = valve trigger for mass flow controller       
     
 elseif strcmp(setup_name, 'WLI-TOBIN')
     s = daq.createSession('ni');

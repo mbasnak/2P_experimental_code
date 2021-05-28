@@ -4,17 +4,7 @@
 function [ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data( trial_time, trial_data, num_x_pixels)
 
 %import acquisition settings
-settings = sensor_settings;
-
-%Asignment of the Daq channels
-settings.fictrac_x_DAQ_AI = 5;
-settings.fictrac_yaw_gain_DAQ_AI = 1;
-settings.fictrac_yaw_DAQ_AI = 3; 
-settings.fictrac_y_DAQ_AI = 2; 
-
-settings.panels_x_DAQ_AI = 4;
-settings.panels_y_DAQ_AI = 7;
-
+settings = nidaq_settings;
 
 data.Intx = trial_data( :, settings.fictrac_x_DAQ_AI ); %data from x channel
 data.angularPosition = trial_data( :, settings.fictrac_yaw_gain_DAQ_AI ); 

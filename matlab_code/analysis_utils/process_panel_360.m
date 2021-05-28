@@ -2,7 +2,7 @@
 function [stim_pos] = process_panel_360(rawData, frames)
 
 % Initial variables
-settings = sensor_settings;
+settings = nidaq_settings;
 maxVal = 10;
 minVal = 0;
 initialPx = 3; %my x=1 positon is 3 pixels to the right of the animal

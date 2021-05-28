@@ -7,43 +7,16 @@ cd(setup.python_path);
 % Currently v2
 disp(['About to start trial task: ' task]);
 
-% Setup data structures for read / write on the daq board
-s = daq.createSession('ni');
+%% Setup NI-DAQ
+s = setup_nidaq(run_obj.set_up);
 
-s.addDigitalChannel('Dev1', 'port0/line0', 'OutputOnly'); % triggering of scanimage 5.1
-
-%add analog input channels
-ai_channels_used = [1:3,5,11:14];
-aI = s.addAnalogInputChannel('Dev1', ai_channels_used, 'Voltage');
-for i=1:length(ai_channels_used)
-    aI(i).InputType = 'SingleEnded';
-end
-
-
-% Input channels:
-%
-%   Dev1:
-%       AI.1 = Fictrac yaw gain
-%       AI.2 = Fictrac y
-%       AI.3 = Fictrac yaw
-%       AI.4 = Panels x 
-%       AI.5 = Fictrac x
-%       AI.6 = piezo z
-%       AI.7 = Panels y
-%       AI.8 = motor position
-%
-% Output channels:
-%
-%   Dev1:
-%       P0.0 = external trigger for scanimage
-
-%establish the acquisition rate and duration
-settings = sensor_settings;
+%% establish the acquisition rate and duration
+settings = nidaq_settings;
 SAMPLING_RATE = settings.sampRate;
 s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 total_duration = run_obj.trial_t; %trial duration taken from the GUI input
 
-%pre-allocate output data (imaging trigger)
+%% pre-allocate output data (imaging trigger)
 imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
 imaging_trigger(2:end-1) = 1.0;
 output_data = [imaging_trigger];

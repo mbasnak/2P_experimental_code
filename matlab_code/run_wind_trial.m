@@ -11,22 +11,22 @@ disp(['About to start trial task: ' task]);
 s = setup_nidaq(run_obj.set_up);
 
 %% establish the acquisition rate and duration
-settings = sensor_settings;
+settings = nidaq_settings;
 SAMPLING_RATE = settings.sampRate;
 s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 total_duration = run_obj.trial_t; %trial duration taken from the GUI input
 
 %% prepare outputs
-
+MFC = MFC_settings;
 flow_rate = run_obj.airflow.Value; % [L/min] (range 0-2 L/min)
 
 if strcmp(run_obj.set_up, '2P-room')
-    MFC_trigger = (flow_rate / 2) * 5 * ones(SAMPLING_RATE*total_duration,1); %convert the airflow signal to voltage
+    MFC_trigger = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE*total_duration,1); %convert the airflow signal to voltage
     MFC_trigger(end) = 0; % turn off air at the end of the trial
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
     imaging_trigger(2:end-1) = 1.0;
     valve_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
-    output_data = [MFC_trigger, imaging_trigger, valve_trigger, valve_trigger];
+    output_data = [MFC_trigger, imaging_trigger, valve_trigger];
     queueOutputData(s, output_data);
     
     % Trigger scanimage run if using 2p.

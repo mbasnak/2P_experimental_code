@@ -4,7 +4,7 @@ function [fwd_histo, ang_histo, fly_pos_histo] = display_trial_both(sid, tid, ru
 %%% Tatsuo Okubo
 %%% 2021-03-03
 
-settings = sensor_settings;
+settings = nidaq_settings;
 
 %% get fly position and velocity, as well as stim position
 
