@@ -8,7 +8,7 @@ This code has been tested using
 - Python 3.7.4
 
 ## NI-DAQ channel information
-2021/05/10 updated
+2021/05/28 updated
 
 | NI-DAQ  | MATLAB | Description | Notes |
 | ------- |:------:| ----------- | ----- |
@@ -17,9 +17,10 @@ This code has been tested using
 | AI3 | 3 | yaw ||
 | AI4 | N.A.| frame clock (unused)||
 | AI5 | 4 | x dim panels ||
-| AI11 | 5 | x ||
-| AI12 | 6 | piezo Z ||
-| AI13 | 7 | y dim panels ||
-| AI14 | 8 | motor position ||
-| AI15 | 9 | mass flow controller (monitor) | 0-5V corresponds to 0-2L/min |
+| AI15 | 5 | mass flow controller (monitor) | 0-5V corresponds to 0-2L/min |
+| AI11 | 6 | x ||
+| AI12 | 7 | piezo Z ||
+| AI13 | 8 | y dim panels ||
+| AI14 | 9 | motor position ||
+| AI15 | 10 | mass flow controller (control) | copy of the control signal |
 | AO0 |  | mass flow controller (control) | 0-5V corresponds to 0-2L/min |
