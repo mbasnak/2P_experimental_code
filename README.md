@@ -21,7 +21,7 @@ This code has been tested using
 | AI11 | 6 | x ||
 | AI12 | 7 | piezo Z ||
 | AI13 | 8 | y dim panels ||
-| AI14 | 9 | motor position ||
+| AI14 | 9 | motor position | for the wind device|
 | AI15 | 10 | mass flow controller (control) | copy of the control signal |
 | AO0 |  | mass flow controller (control) | 0-5V corresponds to 0-2L/min |
 | DO0 |  | scanimage trigger| |
