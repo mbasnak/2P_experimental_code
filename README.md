@@ -23,7 +23,6 @@ This code has been tested using
 | AI13 | 9 | MFC (control) | copy of the control signal |
 | AI14 | 10 | MFC (monitor) | 0-5V corresponds to 0-2L/min |
 | AI15 | N.A.| frame clock (unused)| ScanImage|
-
 | AO0 |  | mass flow controller (control) | 0-5V corresponds to 0-2L/min |
 | DO0 |  | imaging trigger| ScanImage |
 | DO1 |  | valve ON/OFF | MFC |
