@@ -25,4 +25,4 @@ This code has been tested using
 | AI15 | 10 | mass flow controller (control) | copy of the control signal |
 | AO0 |  | mass flow controller (control) | 0-5V corresponds to 0-2L/min |
 | DO0 |  | scanimage trigger| |
-| DO1 |  | | masas flow controller valve ON/OFF|
+| DO1 |  | mass flow controller valve ON/OFF | |
