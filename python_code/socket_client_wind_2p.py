@@ -135,7 +135,7 @@ class SocketClient(object):
                         #motor_info = arduino_line.split(", ")
                         #log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # first element is the current motor position (0-360 deg)
                         #f_arduino.writelines(log_arduino)
-                        motor_pos = 360 - int(arduino_line)  # current motor position (0-360 deg)
+                        motor_pos = int(arduino_line)  # current motor position (0-360 deg)
                         self.motor_pos_rad = (motor_pos / 360) * 2 * np.pi  # convert motor position from deg to rad
                         
                          # Set analog output voltage of Phidget
@@ -190,7 +190,7 @@ class SocketClient(object):
                     self.timestamp = float(toks[22])  # frame capture time (ms) since epoch
 
                     # send the heading signal to Arduino
-                    animal_heading_360 = 360 - int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
+                    animal_heading_360 = int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
                     arduino_str = "H " + str(animal_heading_360) + "\n"  # "H is a command used in the Arduino code to indicate heading
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                     ser.write(arduino_byte)  # send to serial port  
