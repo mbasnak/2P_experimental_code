@@ -8,18 +8,22 @@ This code has been tested using
 - Python 3.7.4
 
 ## NI-DAQ channel information
-2021/05/10 updated
+2021/05/28 updated
 
 | NI-DAQ  | MATLAB | Description | Notes |
 | ------- |:------:| ----------- | ----- |
-| AI1 | 1 | yaw gain ||
-| AI2 | 2 | y ||
-| AI3 | 3 | yaw ||
-| AI4 | N.A.| frame clock (unused)||
-| AI5 | 4 | x dim panels ||
-| AI11 | 5 | x ||
-| AI12 | 6 | piezo Z ||
-| AI13 | 7 | y dim panels ||
-| AI14 | 8 | motor position ||
-| AI15 | 9 | mass flow controller (monitor) | 0-5V corresponds to 0-2L/min |
+| AI1 | 1 | x | FicTrac |
+| AI2 | 2 | y | FicTrac |
+| AI3 | 3 | yaw | FicTrac |
+| AI4 | 4 | yaw gain | FicTrac |
+| AI5 | 5 | x dim | Panels |
+| AI10 | 6 | y dim | Panels |
+| AI11 | 7 | piezo Z | fast-Z objective|
+| AI12 | 8 | motor position | wind device|
+| AI13 | 9 | MFC (control) | copy of the control signal |
+| AI14 | 10 | MFC (monitor) | 0-5V corresponds to 0-2L/min |
+| AI15 | N.A.| frame clock (unused)| ScanImage|
 | AO0 |  | mass flow controller (control) | 0-5V corresponds to 0-2L/min |
+| DO0 |  | imaging trigger| ScanImage |
+| DO1 |  | valve ON/OFF | MFC |
+| DO6 |  | acquisition stop? | ScanImage |
