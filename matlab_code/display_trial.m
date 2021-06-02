@@ -2,7 +2,7 @@ function [fwd_histo, ang_histo, fly_pos_histo] = display_trial(sid, tid, run_obj
 
 %Code to plot the trial results once the trial is complete
 
-settings = sensor_settings;
+settings = nidaq_settings;
 
 %% get fly position and velocity, as well as stim position
 
