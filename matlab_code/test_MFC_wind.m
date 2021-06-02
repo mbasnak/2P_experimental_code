@@ -10,7 +10,7 @@
 
 %% parameters
 pulse_dur = 10; %[s]
-flow_rate = 0.1; % [L/min]
+flow_rate = 1; % [L/min]
 
 %% setup DAQ
 set_up = '2P-room';
@@ -28,7 +28,7 @@ output_data = [MFC_trigger, imaging_trigger, valve_trigger];
 queueOutputData(s, output_data);
 s.startForeground();
 
-%% reak pulse
+%% pulse
 MFC_trigger = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE * pulse_dur, 1); %convert the airflow signal to voltage
 imaging_trigger = zeros(SAMPLING_RATE * pulse_dur, 1);
 valve_trigger = ones(SAMPLING_RATE * pulse_dur, 1);
@@ -38,5 +38,10 @@ output_data = [MFC_trigger, imaging_trigger, valve_trigger];
 queueOutputData(s, output_data);
 [output,time] = s.startForeground();
 
-figure,
-plot(time,output(:,9))
+%%
+figure
+set(gcf, 'position', [400 400 1200 400])
+plot(time,output(:,9) * MFC.MAX_FLOW / MFC.MAX_V)
+ylim([0 MFC.MAX_FLOW + 0.1])
+xlabel('time (s)', 'fontsize', 12)
+ylabel('flow rate (L/min')
