@@ -21,12 +21,12 @@ MFC = MFC_settings;
 flow_rate = run_obj.airflow.Value; % [L/min] (range 0-2 L/min)
 
 if strcmp(run_obj.set_up, '2P-room')
-    MFC_trigger = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE*total_duration,1); %convert the airflow signal to voltage
-    MFC_trigger(end) = 0; % turn off air at the end of the trial
+    MFC_flow = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE*total_duration,1); %convert the airflow signal to voltage
+    MFC_flow(end) = 0; % turn off air at the end of the trial
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
     imaging_trigger(2:end-1) = 1.0;
-    valve_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
-    output_data = [MFC_trigger, imaging_trigger, valve_trigger];
+    MFC_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
+    output_data = [MFC_flow, imaging_trigger, MFC_trigger];
     queueOutputData(s, output_data);
     
     % Trigger scanimage run if using 2p.
