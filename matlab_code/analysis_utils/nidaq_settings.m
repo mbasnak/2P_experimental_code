@@ -21,4 +21,6 @@ settings.motor_DAQ_AI = 8;
 settings.mfc_control = 9;
 settings.mfc_monitor = 10;
 
+settings.Pockels_cell = 11;
+
 

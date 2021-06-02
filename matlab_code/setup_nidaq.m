@@ -17,7 +17,7 @@ if strcmp(setup_name, '2P-room')
     s.addDigitalChannel(Dev, 'port0/line0:1', 'OutputOnly'); % scanimage trigger, valve trigger for MFC
     
     %% Inputs
-    ai_channels_used = [1:5, 10:14];
+    ai_channels_used = [1:5, 10:15];
     aI = s.addAnalogInputChannel(Dev, ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
@@ -36,7 +36,8 @@ if strcmp(setup_name, '2P-room')
 %       AI.7 = Piezo Z
 %       AI.8 = motor position
 %       AI.9 = mass flow controller (copy of control)
-%       AI.10 = mass flow controller (monitor) 
+%       AI.10 = mass flow controller (monitor)
+%       AI.11 = Pockels cell sensor (monitor)
 %
 % Output channels:
 %
