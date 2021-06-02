@@ -21,12 +21,12 @@ MFC = MFC_settings;
 flow_rate = run_obj.airflow.Value; % [L/min] (range 0-2 L/min)
 
 if strcmp(run_obj.set_up, '2P-room')
-    MFC_trigger = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE*total_duration,1); %convert the airflow signal to voltage
-    MFC_trigger(end) = 0; % turn off air at the end of the trial
+    MFC_flow = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE*total_duration,1); %convert the airflow signal to voltage
+    MFC_flow(end) = 0; % turn off air at the end of the trial
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
     imaging_trigger(2:end-1) = 1.0;
-    valve_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
-    output_data = [MFC_trigger, imaging_trigger, valve_trigger];
+    MFC_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
+    output_data = [MFC_flow, imaging_trigger, MFC_trigger];
     queueOutputData(s, output_data);
     
     % Trigger scanimage run if using 2p.
@@ -70,9 +70,31 @@ end
 Panel_com('start');
 
 %% start the trial
+delay = 1; % waiting time for the motor to get ready (s)
 
 %Run the python script that runs fictrac and other experimental conditions
+if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
+    if strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1 
+        if strcmp(run_obj.set_up, '2P-room')
+            system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+        end
+    elseif strcmp(task, 'Open_Loop') == 1
+        if strcmp(run_obj.set_up, 'WLI-TOBIN')
+            system(['conda activate CLwind & python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t + delay) ' "' hdf_file '" ' ' 1 &'])
+        elseif strcmp(run_obj.set_up, '2P-room')
+            system(['python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+        end
+    else
+        disp('Task not ready!')
+    end
+        
+elseif strcmp(run_obj.experiment_type,'Simulus_jump')==1
+    disp('Trial type not ready!')
+elseif strcmp(run_obj.experiment_type,'Gain_change')==1
+    disp('Trial type not ready!')
+end
 
+pause(delay)
 
 %Start the data acquisition
 [trial_data, trial_time] = s.startForeground(); %gets data and timestamps for the NiDaq acquisition

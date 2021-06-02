@@ -21,20 +21,20 @@ s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 
 %% preparation
 MFC = MFC_settings;
-MFC_trigger = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE * MFC.WAIT, 1); %convert the airflow signal to voltage
+MFC_flow = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE * MFC.WAIT, 1); %convert the airflow signal to voltage
 imaging_trigger = zeros(SAMPLING_RATE * MFC.WAIT, 1);
-valve_trigger = zeros(SAMPLING_RATE * MFC.WAIT, 1);
-output_data = [MFC_trigger, imaging_trigger, valve_trigger];
+MFC_trigger = zeros(SAMPLING_RATE * MFC.WAIT, 1);
+output_data = [MFC_flow, imaging_trigger, MFC_trigger];
 queueOutputData(s, output_data);
 s.startForeground();
 
 %% pulse
-MFC_trigger = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE * pulse_dur, 1); %convert the airflow signal to voltage
+MFC_flow = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE * pulse_dur, 1); %convert the airflow signal to voltage
 imaging_trigger = zeros(SAMPLING_RATE * pulse_dur, 1);
-valve_trigger = ones(SAMPLING_RATE * pulse_dur, 1);
-valve_trigger(1) = 0;
-valve_trigger(end) = 0;
-output_data = [MFC_trigger, imaging_trigger, valve_trigger];
+MFC_trigger = ones(SAMPLING_RATE * pulse_dur, 1);
+MFC_trigger(1) = 0;
+MFC_trigger(end) = 0;
+output_data = [MFC_flow, imaging_trigger, MFC_trigger];
 queueOutputData(s, output_data);
 [output,time] = s.startForeground();
 
