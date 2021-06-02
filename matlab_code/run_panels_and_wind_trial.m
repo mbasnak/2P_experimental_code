@@ -37,14 +37,6 @@ if strcmp(run_obj.set_up, '2P-room')
         acq = fscanf(scanimage_client, '%s');
         disp(['Read acq: ' acq ' from scanimage server' ]);
     end
-elseif strcmp(run_obj.set_up, 'WLI-TOBIN')
-    Ch.master = 1; % master solenoid valve
-    Ch.odor = 2; % odor (HIGH) vs solvant (LOW)
-    Pulse = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
-    Pulse(2:end-1) = 1.0;
-    output_data(:, Ch.master) = Pulse;
-    output_data(:, Ch.odor) = Pulse;
-    queueOutputData(s, output_data);
 end
 
 %% prepare file names
@@ -99,7 +91,73 @@ pause(delay)
 %Start the data acquisition
 [trial_data, trial_time] = s.startForeground(); %gets data and timestamps for the NiDaq acquisition
 
+Panel_com('stop');
+Panel_com('all_off');
 system('exit');
 release(s);
 
+
+end
+
+
+%Functions to set the panels correctly for each experiment type
+
+function closedLoop(pattern, startPosition)
+%% begins closedLoop setting in panels
+Panel_com('stop');
+%set arena
+Panel_com('set_config_id', 1);
+%set pattern number
+Panel_com('set_pattern_id', pattern);
+Panel_com('set_position', [startPosition, 1]);
+%set closed loop for x
+Panel_com('set_mode', [3, 0]);
+Panel_com('quiet_mode_on');
+Panel_com('all_off');
+end
+
+function openLoop(pattern, func)
+%% begins openLoop setting in panels
+freq = 50;
+Panel_com('stop');
+%set pattern number
+Panel_com('set_pattern_id', pattern);
+%set open loop for x
+Panel_com('set_mode', [4, 0]);
+Panel_com('set_funcX_freq' , freq);
+Panel_com('set_posFunc_id', [1, func]);
+Panel_com('set_position', [1, 1]);
+%quiet mode on
+Panel_com('quiet_mode_on');
+end
+
+function closedOpenLoop(pattern, func, startPosition)
+%% begins closedLoop setting in panels
+freq = 5;
+Panel_com('stop');
+%set pattern number
+Panel_com('set_pattern_id', pattern);
+%set closed loop for x , open loop y
+Panel_com('set_mode', [3, 4]);
+Panel_com('set_funcY_freq' , freq);
+Panel_com('set_posFunc_id', [2, func]);
+%Define the start position in y according to the y pos func
+
+Panel_com('set_position', [startPosition, 1]);
+%quiet mode on
+Panel_com('quiet_mode_on');
+end
+
+function closedClosedLoop(pattern, startPosition)
+%% begins closedLoop setting in panels
+freq = 50;
+Panel_com('stop');
+Panel_com('g_level_7');
+%set pattern number
+Panel_com('set_pattern_id', pattern);
+%set closed loop for x and y
+Panel_com('set_mode', [3, 3]);
+Panel_com('set_position', [startPosition, 1]);
+%quiet mode on
+Panel_com('quiet_mode_on');
 end
