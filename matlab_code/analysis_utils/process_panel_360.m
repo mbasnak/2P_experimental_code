@@ -6,7 +6,7 @@ settings = nidaq_settings;
 maxVal = 10;
 minVal = 0;
 initialPx = 3; %my x=1 positon is 3 pixels to the right of the animal
-initialAngle = 3*360/frames;
+initialAngle = initialPx*360/frames;
 
 %invert the direction of the data
 inv_data = 10 - rawData;

@@ -69,8 +69,8 @@ ylabel('Deg');
 
 %Fly position
 subplot(viz_figs.fly_ax);
-plot(t, fly_pos, 'color', [0.2 0.8 0.3]);
-title('Fly position');
+plot(t, wrapTo360(360-fly_pos), 'color', [0.2 0.8 0.3]);
+title('Ball position');
 ylabel('Deg');
 ylim([0 360]);
 xlim([0 trial_time(end)]);

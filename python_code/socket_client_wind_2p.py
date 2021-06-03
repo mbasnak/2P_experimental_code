@@ -20,6 +20,7 @@ class SocketClient(object):
         'logfile_auto_incr': True,
         'logfile_auto_incr_format': '{0:06d}',
         'logfile_dt': 0.01,
+        'offset':0
     }
 
     def __init__(self, param=DefaultParam):
@@ -93,6 +94,10 @@ class SocketClient(object):
         # flag for indicating when the trial is done
         self.done = False
 
+        #initialize heading with respect to panels to be starting position
+        self.tube_position = 0
+        self.bar_position = np.deg2rad(self.param['offset'])
+
         #set up logger to save hd5f file
         self.logger_fictrac = H5Logger(
             filename = self.param['logfile_name'],
@@ -108,6 +113,9 @@ class SocketClient(object):
             auto_incr_format = self.param['logfile_auto_incr_format'],
             param_attr = self.param
         )
+
+        #specify a variable for the first message being read
+        self.first_time_in_loop = True
 
 
 
@@ -184,14 +192,23 @@ class SocketClient(object):
                     self.frame = int(toks[1])  # frame counter
                     self.posx = float(toks[15])  # integrated x position (rad)
                     self.posy = float(toks[16])  # integrated y position (rad)
-                    self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rad)
                     self.intx = float(toks[20])  # integrated x position (rad) of the sphere in lab coord neglecting heading
                     self.inty = float(toks[21])  # integrated y position (rad) of the sphere in lab coord neglecting heading
                     self.timestamp = float(toks[22])  # frame capture time (ms) since epoch
 
+                    # calculate delta heading by comparing it to the previous value
+                    if self.first_time_in_loop:
+                        self.prev_heading = float(toks[17])
+                        self.first_time_in_loop = False
+                    else:
+                        self.prev_heading = self.heading
+                    self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rad)
+                    self.deltaheading = self.heading - self.prev_heading
+
                     # send the heading signal to Arduino
-                    animal_heading_360 = int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
-                    arduino_str = "H " + str(animal_heading_360) + "\n"  # "H is a command used in the Arduino code to indicate heading
+                    self.tube_position = (self.tube_position + self.deltaheading) % (2 * np.pi)
+                    #animal_heading_360 = int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
+                    arduino_str = "H " + str(np.rad2deg(self.tube_position)) + "\n"  # "H is a command used in the Arduino code to indicate heading
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                     ser.write(arduino_byte)  # send to serial port  
 
@@ -203,7 +220,8 @@ class SocketClient(object):
                     self.aout_x.setVoltage(output_voltage_x)
 
                     # Set analog output voltage YAW
-                    output_voltage_yaw = (self.heading) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
+                    self.bar_position = (self.bar_position + self.deltaheading) % (2 * np.pi)  # wrap around
+                    output_voltage_yaw = (self.bar_position) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
                     self.aout_yaw.setVoltage(output_voltage_yaw)
                     self.aout_yaw_gain.setVoltage(output_voltage_yaw)  
 
@@ -218,8 +236,10 @@ class SocketClient(object):
                     # Display status message
                     if self.print:
                         print(f'time elapsed: {self.time_elapsed: 1.3f}', end='')
-                        print(f'  heading: {animal_heading_360:3.0f}', end='')
+                        print(f'  tube pos: {np.rad2deg(self.tube_position):3.0f}', end='')
                         print(f'  motor pos: {motor_pos:3.0f}')
+                        print(f'  bar position: {np.rad2deg(self.bar_position):3.0f}')
+                        print(f'  delta heading: {np.rad2deg(self.deltaheading):3.0f}')
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True
@@ -241,7 +261,10 @@ class SocketClient(object):
             'intx': self.intx,
             'inty': self.inty,
             'heading': self.heading,
-            'motor': self.motor_pos_rad
+            'deltaheading': self.deltaheading,
+            'motor': self.motor_pos_rad,
+            'tube_position': self.tube_position,
+            'bar_position': self.bar_position
         }
         self.logger_fictrac.add(log_data)
 
