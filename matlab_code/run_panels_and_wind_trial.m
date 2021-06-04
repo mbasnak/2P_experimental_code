@@ -49,9 +49,11 @@ hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 %% Configure Panels 
 
 %convert start position to px
-start = ((360 - run_obj.start_pos)*96/360) + 1;
+start = mod(((360 - run_obj.start_pos)*96/360) + 1, 96);  % front is 1, 270 deg (left) is panel 25
 
 if (strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1 )  
+    closedLoop(run_obj.pattern_number, start);
+elseif (strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1 )  
     closedLoop(run_obj.pattern_number, start);
 else
     error('task not implemented')
@@ -69,10 +71,8 @@ if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
         if strcmp(run_obj.set_up, '2P-room')
             system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.offset.Value)  ' 1 &']);
         end
-    elseif strcmp(task, 'Open_Loop') == 1
-        if strcmp(run_obj.set_up, 'WLI-TOBIN')
-            system(['conda activate CLwind & python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t + delay) ' "' hdf_file '" ' ' 1 &'])
-        elseif strcmp(run_obj.set_up, '2P-room')
+    elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
+        if strcmp(run_obj.set_up, '2P-room')
             system(['python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
         end
     else
