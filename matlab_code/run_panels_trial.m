@@ -86,7 +86,7 @@ Panel_com('stop');
 Panel_com('set_config_id', 1);
 %set pattern number
 Panel_com('set_pattern_id', pattern);
-Panel_com('set_position', [startPosition, 1]);
+Panel_com('set_position', [1, startPosition]);
 %set closed loop for x
 Panel_com('set_mode', [3, 0]);
 Panel_com('quiet_mode_on');
@@ -120,7 +120,7 @@ Panel_com('set_funcY_freq' , freq);
 Panel_com('set_posFunc_id', [2, func]);
 %Define the start position in y according to the y pos func
 
-Panel_com('set_position', [startPosition, 1]);
+Panel_com('set_position', [1, startPosition]);
 %quiet mode on
 Panel_com('quiet_mode_on');
 end
@@ -134,7 +134,7 @@ Panel_com('g_level_7');
 Panel_com('set_pattern_id', pattern);
 %set closed loop for x and y
 Panel_com('set_mode', [3, 3]);
-Panel_com('set_position', [startPosition, 1]);
+Panel_com('set_position', [1, startPosition]);
 %quiet mode on
 Panel_com('quiet_mode_on');
 end

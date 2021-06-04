@@ -47,7 +47,11 @@ cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename 
 hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 
 %% Configure Panels 
-start = run_obj.start_pos;
+
+%convert start position to px
+start = ((run_obj.start_pos)*96/360) + 1;
+
+
 if ( strcmp(task, 'Closed_Loop') == 1 )  
     closedLoop(run_obj.pattern_number, start);
 elseif ( strcmp(task, 'Open_Loop') == 1 )
@@ -109,7 +113,7 @@ Panel_com('set_mode', [3, 0]);
 pause(0.1)
 Panel_com('set_pattern_id', pattern);
 pause(0.1)
-Panel_com('set_position', [startPosition, 1]);
+Panel_com('set_position', [1, startPosition]);
 
 Panel_com('quiet_mode_on');
 Panel_com('all_off');
@@ -156,7 +160,7 @@ Panel_com('g_level_7');
 Panel_com('set_pattern_id', pattern);
 %set closed loop for x and y
 Panel_com('set_mode', [3, 3]);
-Panel_com('set_position', [startPosition, 1]);
+Panel_com('set_position', [1, startPosition]);
 %quiet mode on
 Panel_com('quiet_mode_on');
 end
