@@ -38,6 +38,5 @@ downsampled.motor = resample_new(motor, sampRate_new, settings.sampRate);
 downsRad.motor = downsampled.motor .* 2 .* pi ./ 10; % from voltage to radian
 downsDeg.motor = downsRad.motor .* 360 ./ (2 * pi); 
 stim_pos_motor = downsDeg.motor;
-stim_pos_motor = wrapTo360(360-stim_pos_motor);
 
 end

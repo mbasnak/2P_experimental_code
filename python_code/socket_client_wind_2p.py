@@ -144,9 +144,9 @@ class SocketClient(object):
                         #log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # first element is the current motor position (0-360 deg)
                         #f_arduino.writelines(log_arduino)
                         motor_pos = int(arduino_line)  # current motor position (0-360 deg)
-                        self.motor_pos_rad = (motor_pos / 360) * 2 * np.pi  # convert motor position from deg to rad
+                        self.motor_pos_rad = np.deg2rad(motor_pos) 
                         
-                         # Set analog output voltage of Phidget
+                         # Set analog output voltage of Phidget so that it could be recorded using NI-DAQ
                         output_voltage_motor = self.motor_pos_rad * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
                         self.aout_motor.setVoltage(output_voltage_motor)
 
@@ -208,7 +208,7 @@ class SocketClient(object):
                     # send the heading signal to Arduino
                     self.motor_command = (self.motor_command + self.deltaheading) % (2 * np.pi)
                     #animal_heading_360 = int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
-                    arduino_str = "H " + str(np.rad2deg(self.motor_command)) + "\n"  # "H is a command used in the Arduino code to indicate heading
+                    arduino_str = "H " + str(360 - np.rad2deg(self.motor_command)) + "\n"  # "H is a command used in the Arduino code to indicate heading
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                     ser.write(arduino_byte)  # send to serial port  
 
