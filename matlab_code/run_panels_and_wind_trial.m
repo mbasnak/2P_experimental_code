@@ -49,17 +49,12 @@ hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 %% Configure Panels 
 
 %convert start position to px
-start = ((run_obj.start_pos)*96/360) + 1;
+start = ((360 - run_obj.start_pos)*96/360) + 1;
 
-
-if ( strcmp(task, 'Closed_Loop') == 1 )  
+if (strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1 )  
     closedLoop(run_obj.pattern_number, start);
-elseif ( strcmp(task, 'Open_Loop') == 1 )
-    openLoop(run_obj.pattern_number, run_obj.function_number);
-elseif ( strcmp(task, 'Closed_Loop_X_Open_Loop_Y') == 1)
-    closedOpenLoop(run_obj.pattern_number, run_obj.function_number, start); 
-elseif ( strcmp(task, 'Closed_Loop_X_Closed_Loop_Y') == 1)
-    closedClosedLoop(run_obj.pattern_number, start); 
+else
+    error('task not implemented')
 end
 
 % Start panels

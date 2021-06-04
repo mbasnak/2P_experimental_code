@@ -52,7 +52,7 @@ end
 experiment_type = run_obj.experiment_type;
 cur_trial_corename = [experiment_type '_' task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(run_obj.session_id) '_tid_' num2str(tid)];
 cur_trial_file_name = [ run_obj.experiment_ball_dir '\hdf5_' cur_trial_corename '.hdf5' ];
-hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
+hdf_file = cur_trial_file_name; %establishes name of hdf5 file to be written.
 
 %% start the trial
 delay = 1; % waiting time for the motor to get ready (s)

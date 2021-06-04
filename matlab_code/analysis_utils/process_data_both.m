@@ -4,7 +4,7 @@
 %%% Tatsuo Okubo
 %%% 2021-03-03
 
-function [ t, stim_pos_panel, stim_pos_motor, vel_for, vel_yaw, fly_pos] = process_data_both( trial_time, trial_data, num_x_pixels)
+function [ t, stim_pos_panel_x, stim_pos_panel_y, stim_pos_motor, vel_for, vel_yaw, fly_pos] = process_data_both( trial_time, trial_data, num_x_pixels)
 
 %% import acquisition settings
 
@@ -26,13 +26,15 @@ vel_yaw = smoothed.angularVel;
 
 %% Get panel position and time data
 
-panels = trial_data( :, settings.panels_x_DAQ_AI ); %data from the x dimension in panels
+panels = trial_data( :, settings.panels_x_DAQ_AI); %data from the x dimension in panels
 fly_pos = smoothed.degAngularPosition;
-[stim_pos_panel] = process_panel_360(panels, num_x_pixels); %returns filtered and downsampled panel px data as well as calculated angle of the bar
-[ t ] = resample_new(trial_time, sampRate_new, settings.sampRate); %downsamples the time
+stim_pos_panel_x = process_panel_360(panels, num_x_pixels); %returns filtered and downsampled panel px data as well as calculated angle of the bar
+t = resample_new(trial_time, sampRate_new, settings.sampRate); %downsamples the time
 
-%% Get panel position
+panels_y = 360 - trial_data(:, settings.panels_y_DAQ_AI) * 360 / 10; % 0-10V covers 0-360 deg
+stim_pos_panel_y = resample_new(panels_y, sampRate_new, settings.sampRate);
 
+%% Get motor position
 motor = trial_data( :, settings.motor_DAQ_AI);
 downsampled.motor = resample_new(motor, sampRate_new, settings.sampRate);
 downsRad.motor = downsampled.motor .* 2 .* pi ./ 10; % from voltage to radian
