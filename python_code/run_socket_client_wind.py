@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath('C:/Users/WilsonLab/Desktop/FicTrac_Experiments/2P_experimental_code'))
 from socket_client_wind_2p import SocketClient  # note: different code for wind experiments
 
-def experiment_code(experiment=None, time=60, logfile=None, offset = 0):
+def experiment_code(experiment=None, time=60, logfile=None, offset=0):
     experiment_param = {
         'experiment': experiment, #the experiment number determines the experiment type, with
         'experiment_time': time, #this is the trial length (s)

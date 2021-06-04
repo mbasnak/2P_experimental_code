@@ -95,7 +95,7 @@ class SocketClient(object):
         self.done = False
 
         #initialize heading with respect to panels to be starting position
-        self.tube_position = 0
+        self.motor_command = 0
         self.bar_position = np.deg2rad(self.param['offset'])
 
         #set up logger to save hd5f file
@@ -206,9 +206,9 @@ class SocketClient(object):
                     self.deltaheading = self.heading - self.prev_heading
 
                     # send the heading signal to Arduino
-                    self.tube_position = (self.tube_position + self.deltaheading) % (2 * np.pi)
+                    self.motor_command = (self.motor_command + self.deltaheading) % (2 * np.pi)
                     #animal_heading_360 = int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
-                    arduino_str = "H " + str(np.rad2deg(self.tube_position)) + "\n"  # "H is a command used in the Arduino code to indicate heading
+                    arduino_str = "H " + str(np.rad2deg(self.motor_command)) + "\n"  # "H is a command used in the Arduino code to indicate heading
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                     ser.write(arduino_byte)  # send to serial port  
 
@@ -236,10 +236,10 @@ class SocketClient(object):
                     # Display status message
                     if self.print:
                         print(f'time elapsed: {self.time_elapsed: 1.3f}', end='')
-                        print(f'  tube pos: {np.rad2deg(self.tube_position):3.0f}', end='')
-                        print(f'  motor pos: {motor_pos:3.0f}')
-                        print(f'  bar position: {np.rad2deg(self.bar_position):3.0f}')
-                        print(f'  delta heading: {np.rad2deg(self.deltaheading):3.0f}')
+                        print(f'  motor command: {np.rad2deg(self.motor_command):3.0f}', end='')
+                        print(f'  motor pos: {motor_pos:3.0f}', end='')
+                        print(f'  bar pos: {np.rad2deg(self.bar_position):3.0f}')
+                        #print(f'  delta heading: {np.rad2deg(self.deltaheading):3.0f}')
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True
@@ -263,7 +263,7 @@ class SocketClient(object):
             'heading': self.heading,
             'deltaheading': self.deltaheading,
             'motor': self.motor_pos_rad,
-            'tube_position': self.tube_position,
+            'motor_command': self.motor_command,
             'bar_position': self.bar_position
         }
         self.logger_fictrac.add(log_data)
