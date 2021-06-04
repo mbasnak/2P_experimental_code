@@ -138,11 +138,8 @@ class SocketClient(object):
                 if msg:  # received a non-empty message
                     try:
                         arduino_line = msg.decode('utf-8')[:-2]  # decode and remove \r and \n
-                        #motor_info = arduino_line.split(", ")
-                        #log_arduino = str("{:.7f}".format(time_now)) + "," + motor_info[0] + "\n"  # first element is the current motor position (0-360 deg)
-                        #f_arduino.writelines(log_arduino)
                         motor_pos = int(arduino_line)  # current motor position (0-360 deg)
-                        self.motor_pos_rad = (motor_pos / 360) * 2 * np.pi  # convert motor position from deg to rad
+                        self.motor_pos_rad = np.deg2rad(motor_pos)
                         
                          # Set analog output voltage of Phidget
                         output_voltage_motor = self.motor_pos_rad * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
