@@ -10,7 +10,7 @@
 
 %% parameters
 pulse_dur = 10; %[s]
-flow_rate = 1; % [L/min]
+flow_rate = 0.5; % [L/min]
 
 %% setup DAQ
 set_up = '2P-room';
@@ -44,4 +44,4 @@ set(gcf, 'position', [400 400 1200 400])
 plot(time,output(:,9) * MFC.MAX_FLOW / MFC.MAX_V)
 ylim([0 MFC.MAX_FLOW + 0.1])
 xlabel('time (s)', 'fontsize', 12)
-ylabel('flow rate (L/min')
+ylabel('flow rate (L/min)')
