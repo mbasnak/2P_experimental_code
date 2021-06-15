@@ -20,7 +20,7 @@ class SocketClient(object):
         'logfile_auto_incr': True,
         'logfile_auto_incr_format': '{0:06d}',
         'logfile_dt': 0.01,
-        'offset':0
+        'offset': 0
     }
 
     def __init__(self, param=DefaultParam):

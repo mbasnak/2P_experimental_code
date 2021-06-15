@@ -19,6 +19,7 @@ class SocketClient(object):
         'logfile_auto_incr': True,
         'logfile_auto_incr_format': '{0:06d}',
         'logfile_dt': 0.01,
+        'offset': 0
     }
 
     def __init__(self, param=DefaultParam):
@@ -69,7 +70,7 @@ class SocketClient(object):
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(0.0)
 
-        self.print = True;
+        self.print = False
 
         # Set up socket info
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
@@ -78,6 +79,9 @@ class SocketClient(object):
 
         self.done = False
 
+        # Set initial bar position
+        self.bar_position = np.deg2rad(self.param['offset'])
+
         #set up logger to save hd5f file
         self.logger = H5Logger(
                 filename = self.param['logfile_name'],
@@ -85,6 +89,9 @@ class SocketClient(object):
                 auto_incr_format = self.param['logfile_auto_incr_format'],
                 param_attr = self.param
         )
+
+        #specify a variable for the first message being read
+        self.first_time_in_loop = True
 
 
     def run(self, gain_x = 1):
@@ -136,10 +143,23 @@ class SocketClient(object):
                     self.frame = int(toks[1])
                     self.posx = float(toks[15])
                     self.posy = float(toks[16])
-                    self.heading = float(toks[17])
                     self.intx = float(toks[20])
                     self.inty = float(toks[21])
                     self.timestamp = float(toks[22])
+
+                    # calculate delta heading by comparing it to the previous value
+                    if self.first_time_in_loop:
+                        self.prev_heading = float(toks[17])
+                        self.first_time_in_loop = False
+                    else:
+                        self.prev_heading = self.heading
+                    self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rad)
+                    self.deltaheading = self.heading - self.prev_heading
+                    print(f'prev heading : {np.rad2deg(self.prev_heading):3.0f}')
+                    print(f'heading      : {np.rad2deg(self.heading):3.0f}')
+                    print(f'delta heading: {np.rad2deg(self.deltaheading):3.0f}')
+                    print(f'bar position: {np.rad2deg(self.bar_position):3.0f}')
+                    print('')
 
                     #Set Phidget voltages using FicTrac data
                     # Set analog output voltage X
@@ -149,9 +169,12 @@ class SocketClient(object):
 
 
                     # Set analog output voltage YAW
-                    output_voltage_yaw = (self.heading)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
-                    self.aout_yaw.setVoltage(output_voltage_yaw) 
-                    self.aout_yaw_gain.setVoltage(output_voltage_yaw) 
+                    self.bar_position = (self.bar_position + self.deltaheading) % (2 * np.pi)  # wrap around
+                    output_voltage_yaw = (self.bar_position) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
+                    self.aout_yaw.setVoltage(output_voltage_yaw)
+                    self.aout_yaw_gain.setVoltage(output_voltage_yaw)  
+                    #print(f'bar_position : {np.rad2deg(self.bar_position):3.0f}')
+                    
 
                     # Set analog output voltage Y
                     wrapped_inty = self.inty % (2 * np.pi)
@@ -172,6 +195,7 @@ class SocketClient(object):
                         print('volt:   {0:1.3f}'.format(output_voltage_x))
                         print('int y:   {0:1.3f}'.format(wrapped_inty))
                         print('volt:   {0:1.3f}'.format(output_voltage_y))
+                        print(f'bar pos: {np.rad2deg(self.bar_position):3.0f}')
                         print()
 
                     if self.time_elapsed > self.experiment_time:
@@ -191,6 +215,8 @@ class SocketClient(object):
                 'posy': self.posy,
                 'intx': self.intx,
                 'inty': self.inty,
-                'heading': self.heading
+                'heading': self.heading,
+                'deltaheading': self.deltaheading,
+                'bar_position': self.bar_position
             }
             self.logger.add(log_data)

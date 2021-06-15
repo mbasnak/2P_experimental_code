@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath('C:/Users/WilsonLab/Desktop/FicTrac_Experiments/2P_experimental_code/python_code'))
 from socket_client import SocketClient
 
-def experiment_code(experiment=None, time=None, logfile=None):
+def experiment_code(experiment=None, time=None, logfile=None, offset=0):
     experiment_param = {
         'experiment': experiment, #the experiment number determines the experiment type, with
         'experiment_time': time, #this is the trial length
@@ -11,6 +11,7 @@ def experiment_code(experiment=None, time=None, logfile=None):
         'logfile_auto_incr': True,
         'logfile_auto_incr_format': '{0:06d}',
         'logfile_dt': 0.01,
+        'offset': offset
     }
     client = SocketClient(experiment_param)
     client.run()
@@ -28,7 +29,8 @@ if __name__ == '__main__':
         experiment = sys.argv[1] #make the first argument be the experiment...
         time = float(sys.argv[2]) #...etc
         logfile = sys.argv[3]
-        experiment_code(experiment, time, logfile)
+        offset = int(sys.argv[4])
+        experiment_code(experiment, time, logfile, offset)
     else:
         experiment_code()
 
