@@ -10,7 +10,7 @@
 
 %% parameters
 pulse_dur = 10; %[s]
-flow_rate = 0.5; % [L/min]
+flow_rate = 0; % [L/min]
 
 %% setup DAQ
 set_up = '2P-room';

@@ -49,12 +49,13 @@ hdf_file = cur_trial_file_name; %etsablishes name of hdf5 file to be written.
 %% Configure Panels 
 
 %convert start position to px
-start = mod(((360 - run_obj.start_pos)*96/360) + 1, 96);  % front is 1, 270 deg (left) is panel 25
+start_x = round(mod(((360 - run_obj.start_pos_x)*96/360) + 1, 96));  % front is 1, 270 deg (left) is panel 25
+start_y = round(mod(((360 - run_obj.start_pos_y)*96/360) + 1, 96));
 
 if (strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1 )  
-    closedLoop(run_obj.pattern_number, start);
+    closedLoop(run_obj.pattern_number, start_x, start_y);
 elseif (strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1 )  
-    closedLoop(run_obj.pattern_number, start);
+    closedLoop(run_obj.pattern_number, start_x, start_y);
 else
     error('task not implemented')
 end
@@ -101,14 +102,14 @@ end
 
 %Functions to set the panels correctly for each experiment type
 
-function closedLoop(pattern, startPosition)
+function closedLoop(pattern, startPositionX, startPositionY)
 %% begins closedLoop setting in panels
 Panel_com('stop');
 Panel_com('set_mode', [3, 0]);
 pause(0.1)
 Panel_com('set_pattern_id', pattern);
 pause(0.1)
-Panel_com('set_position', [1, startPosition]);
+Panel_com('set_position', [startPositionX, startPositionY]);
 
 Panel_com('quiet_mode_on');
 Panel_com('all_off');
@@ -129,7 +130,7 @@ Panel_com('set_position', [1, 1]);
 Panel_com('quiet_mode_on');
 end
 
-function closedOpenLoop(pattern, func, startPosition)
+function closedOpenLoop(pattern, func, startPositionX, startPositionY)
 %% begins closedLoop setting in panels
 freq = 5;
 Panel_com('stop');
@@ -141,12 +142,12 @@ Panel_com('set_funcY_freq' , freq);
 Panel_com('set_posFunc_id', [2, func]);
 %Define the start position in y according to the y pos func
 
-Panel_com('set_position', [startPosition, 1]);
+Panel_com('set_position', [startPositionX, startPositionY]);
 %quiet mode on
 Panel_com('quiet_mode_on');
 end
 
-function closedClosedLoop(pattern, startPosition)
+function closedClosedLoop(pattern, startPositionX,startPositionY)
 %% begins closedLoop setting in panels
 freq = 50;
 Panel_com('stop');
@@ -155,7 +156,7 @@ Panel_com('g_level_7');
 Panel_com('set_pattern_id', pattern);
 %set closed loop for x and y
 Panel_com('set_mode', [3, 3]);
-Panel_com('set_position', [1, startPosition]);
+Panel_com('set_position', [startPositionX, startPositionY]);
 %quiet mode on
 Panel_com('quiet_mode_on');
 end
