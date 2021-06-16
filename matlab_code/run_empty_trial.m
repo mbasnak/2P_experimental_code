@@ -38,7 +38,7 @@ end
 %
 
 %establish the acquisition rate and duration
-settings = sensor_settings;
+settings = nidaq_settings;
 SAMPLING_RATE = settings.sampRate;
 s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 total_duration = run_obj.trial_t; %trial duration taken from the GUI input
