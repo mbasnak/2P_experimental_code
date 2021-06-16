@@ -96,7 +96,7 @@ class SocketClient(object):
 
         #initialize heading with respect to panels to be starting position
         self.motor_command = 0
-        self.bar_position = np.deg2rad(self.param['offset'])
+        self.bar_position = np.deg2rad(360 - self.param['offset'])
 
         #set up logger to save hd5f file
         self.logger_fictrac = H5Logger(
