@@ -70,7 +70,7 @@ class SocketClient(object):
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(0.0)
 
-        self.print = False
+        self.print = True
 
         # Set up socket info
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
@@ -80,7 +80,7 @@ class SocketClient(object):
         self.done = False
 
         # Set initial bar position
-        self.bar_position = np.deg2rad(self.param['offset'])
+        self.bar_position = np.deg2rad(360 - self.param['offset'])  # right to the fly is +90 deg
 
         #set up logger to save hd5f file
         self.logger = H5Logger(
@@ -155,11 +155,6 @@ class SocketClient(object):
                         self.prev_heading = self.heading
                     self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rad)
                     self.deltaheading = self.heading - self.prev_heading
-                    print(f'prev heading : {np.rad2deg(self.prev_heading):3.0f}')
-                    print(f'heading      : {np.rad2deg(self.heading):3.0f}')
-                    print(f'delta heading: {np.rad2deg(self.deltaheading):3.0f}')
-                    print(f'bar position: {np.rad2deg(self.bar_position):3.0f}')
-                    print('')
 
                     #Set Phidget voltages using FicTrac data
                     # Set analog output voltage X

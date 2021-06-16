@@ -29,7 +29,7 @@ if __name__ == '__main__':
         experiment = sys.argv[1] #make the first argument be the experiment...
         time = float(sys.argv[2]) #...etc
         logfile = sys.argv[3]
-        offset = int(sys.argv[4])
+        offset = int(float(sys.argv[4]))
         experiment_code(experiment, time, logfile, offset)
     else:
         experiment_code()
