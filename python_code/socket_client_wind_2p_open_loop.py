@@ -30,9 +30,10 @@ class SocketClient(object):
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
 
         # set up open-loop wind (hard coded for now...)
-        self.wind_dur = 4  # duration of wind stimulus per direction (s)
+        self.wind_dur = 2  # (s) duration of wind stimulus per direction
         self.wind_counter = 0  # counter for keeping track which wind direction is currently specified
-        self.wind_list = range(0, 361, 60)
+        self.wind_repeat = 3  # number of trials to repeat for each wind direction
+        self.wind_list = list(range(0, 360, 60)) * self.wind_repeat
 
         # Set up Phidget serial numbers for using two devices
         self.phidget_vision = 525577  # written on the back of the Phidget
