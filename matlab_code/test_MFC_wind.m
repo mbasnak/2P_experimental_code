@@ -10,7 +10,7 @@
 
 %% parameters
 pulse_dur = 10; %[s]
-flow_rate = 0; % [L/min]
+flow_rate = 0.2; % [L/min] make sure the air is turned on!
 
 %% setup DAQ
 set_up = '2P-room';
@@ -30,6 +30,7 @@ s.startForeground();
 
 %% pulse
 MFC_flow = (flow_rate / MFC.MAX_FLOW) * MFC.MAX_V * ones(SAMPLING_RATE * pulse_dur, 1); %convert the airflow signal to voltage
+MFC_flow(end) = 0; % turn off at the end of the trial
 imaging_trigger = zeros(SAMPLING_RATE * pulse_dur, 1);
 MFC_trigger = ones(SAMPLING_RATE * pulse_dur, 1);
 MFC_trigger(1) = 0;
