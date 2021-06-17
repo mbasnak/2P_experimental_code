@@ -40,9 +40,11 @@ queueOutputData(s, output_data);
 [output,time] = s.startForeground();
 
 %%
-figure
-set(gcf, 'position', [400 400 1200 400])
-plot(time,output(:,9) * MFC.MAX_FLOW / MFC.MAX_V)
-ylim([0 MFC.MAX_FLOW + 0.1])
-xlabel('time (s)', 'fontsize', 12)
-ylabel('flow rate (L/min)')
+if false
+    figure
+    set(gcf, 'position', [400 400 1200 400])
+    plot(time,output(:,9) * MFC.MAX_FLOW / MFC.MAX_V)
+    ylim([0 MFC.MAX_FLOW + 0.1])
+    xlabel('time (s)', 'fontsize', 12)
+    ylabel('flow rate (L/min)')
+end
