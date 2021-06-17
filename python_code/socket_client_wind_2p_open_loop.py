@@ -32,7 +32,7 @@ class SocketClient(object):
         # set up open-loop wind (hard coded for now...)
         self.wind_dur = 2  # (s) duration of wind stimulus per direction
         self.wind_counter = 0  # counter for keeping track which wind direction is currently specified
-        self.wind_repeat = 3  # number of trials to repeat for each wind direction
+        self.wind_repeat = 1  # number of trials to repeat for each wind direction
         self.wind_list = list(range(0, 360, 60)) * self.wind_repeat
 
         # Set up Phidget serial numbers for using two devices
@@ -228,8 +228,8 @@ class SocketClient(object):
                         
                     # Display status message
                     if self.print:
-                        print(f'time elapsed: {self.time_elapsed: 1.3f}', end='')
-                        print(f'\t motor pos: {motor_pos:3.0f}')
+                        print(f'time elapsed: {self.time_elapsed: 1.3f} s', end='')
+                        print(f'\t wind dir: {current_wind_dir:3.0f} deg')
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True
