@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath('C:/Users/WilsonLab/Desktop/FicTrac_Experiments/2P_experimental_code'))
 from socket_client_wind_2p import SocketClient  # note: different code for wind experiments
 
-def experiment_code(experiment=None, time=60, logfile=None, offset=0):
+def experiment_code(experiment=None, time=60, logfile=None, offset=0, gain_panels = 1, gain_wind = 1):
     experiment_param = {
         'experiment': experiment, #the experiment number determines the experiment type, with
         'experiment_time': time, #this is the trial length (s)
@@ -11,7 +11,9 @@ def experiment_code(experiment=None, time=60, logfile=None, offset=0):
         'logfile_auto_incr': False,
         'logfile_auto_incr_format': '{0:06d}',
         'logfile_dt': 0.01,
-        'offset': offset
+        'offset': offset,
+        'gain_panels': gain_panels,
+        'gain_wind': gain_wind
     }
     client = SocketClient(experiment_param)
     client.run()
@@ -31,6 +33,8 @@ if __name__ == '__main__':
         time = float(sys.argv[2]) #...etc
         logfile = sys.argv[3]
         offset = int(sys.argv[4])
-        experiment_code(experiment, time, logfile, offset)
+        gain_panels = int(sys.argv[5])
+        gain_wind = int(sys.argv[6])
+        experiment_code(experiment, time, logfile, offset, gain_panels, gain_wind)
     else:  # no command line argument provided
         experiment_code()

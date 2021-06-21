@@ -165,9 +165,9 @@ class SocketClient(object):
 
                     # Set analog output voltage YAW
                     self.bar_position = (self.bar_position + self.deltaheading) % (2 * np.pi)  # wrap around
-                    output_voltage_yaw = (self.bar_position) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
-                    self.aout_yaw.setVoltage(output_voltage_yaw)
-                    self.aout_yaw_gain.setVoltage(output_voltage_yaw)  
+                    self.output_voltage_yaw = (self.bar_position) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
+                    self.aout_yaw.setVoltage(self.output_voltage_yaw)
+                    self.aout_yaw_gain.setVoltage(self.output_voltage_yaw)  
                     #print(f'bar_position : {np.rad2deg(self.bar_position):3.0f}')
                     
 
@@ -185,7 +185,7 @@ class SocketClient(object):
                         print('frame:  {0}'.format(self.frame))
                         print('time elapsed:   {0:1.3f}'.format(self.time_elapsed))
                         print('yaw:   {0:1.3f}'.format(self.heading*360/(2*np.pi)))                   
-                        print('volt:   {0:1.3f}'.format(output_voltage_yaw))
+                        print('volt:   {0:1.3f}'.format(self.output_voltage_yaw))
                         print('int x:   {0:1.3f}'.format(wrapped_intx))
                         print('volt:   {0:1.3f}'.format(output_voltage_x))
                         print('int y:   {0:1.3f}'.format(wrapped_inty))
@@ -212,6 +212,7 @@ class SocketClient(object):
                 'inty': self.inty,
                 'heading': self.heading,
                 'deltaheading': self.deltaheading,
-                'bar_position': self.bar_position
+                'bar_position': self.bar_position,
+                'out_voltage_yaw': self.output_voltage_yaw
             }
             self.logger.add(log_data)

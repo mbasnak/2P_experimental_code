@@ -20,7 +20,7 @@ session_fig.info_ax.Visible = 'Off';
 xlim(session_fig.info_ax, [0 1]);
 ylim(session_fig.info_ax, [0 1]);
 %add figure title as text
-session_fig.title = text( 0.35, 1, ['Figure for session # ' char(run_obj.session_id)], 'FontSize', 18);
+session_fig.title = text( 0.35, 1, ['Figure for session #', num2str(run_obj.session_id)], 'FontSize', 18);
 session_fig.text_expname = text( 0, 0.2, ['Experiment Name: ' char(run_obj.experiment_type)], 'FontSize', 12, 'Interpreter', 'none'); %session_fig.info_ax as first arg
 session_fig.text_sidtid = text(0, 0, ['Session ID: ' num2str(run_obj.session_id)], 'FontSize', 12); %same
 session_fig.text_trialtime = text(.5, 0.2, ['Trial time: ' num2str(run_obj.trial_t) ' sec | ITI: ' num2str(run_obj.inter_trial_t)], 'FontSize', 12); %same

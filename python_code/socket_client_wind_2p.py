@@ -30,6 +30,10 @@ class SocketClient(object):
         self.experiment_time = self.param['experiment_time']
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
 
+        #get gain for the panels and wind
+        self.gain_panels = self.param['gain_panels']
+        self.gain_wind = self.param['gain_wind']
+
         # Set up Phidget serial numbers for using two devices
         self.phidget_vision = 525577  # written on the back of the Phidget
         self.phidget_wind = 589946  # for sending the position of the motor to NI-DAQ
@@ -119,7 +123,7 @@ class SocketClient(object):
 
 
 
-    def run(self, gain_x = 1):
+    def run(self):
         # connect to socket via UDP, not TCP!
         # connect to Arduino via serial
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock,\
@@ -220,10 +224,10 @@ class SocketClient(object):
                     self.aout_x.setVoltage(output_voltage_x)
 
                     # Set analog output voltage YAW
-                    self.bar_position = (self.bar_position + self.deltaheading) % (2 * np.pi)  # wrap around
-                    output_voltage_yaw = (self.bar_position) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
-                    self.aout_yaw.setVoltage(output_voltage_yaw)
-                    self.aout_yaw_gain.setVoltage(output_voltage_yaw)  
+                    self.bar_position = (self.bar_position + self.deltaheading*self.gain_panels) % (2 * np.pi)  # wrap around
+                    self.output_voltage_yaw = (self.bar_position) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
+                    self.aout_yaw.setVoltage(self.output_voltage_yaw)
+                    self.aout_yaw_gain.setVoltage(self.output_voltage_yaw)  
 
                     # Set analog output voltage Y
                     wrapped_inty = self.inty % (2 * np.pi)
@@ -264,7 +268,8 @@ class SocketClient(object):
             'deltaheading': self.deltaheading,
             'motor': self.motor_pos_rad,
             'motor_command': self.motor_command,
-            'bar_position': self.bar_position
+            'bar_position': self.bar_position,
+            'out_voltage_yaw': self.output_voltage_yaw
         }
         self.logger_fictrac.add(log_data)
 

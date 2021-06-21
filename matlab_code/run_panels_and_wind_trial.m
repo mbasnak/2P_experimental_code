@@ -70,7 +70,7 @@ delay = 1; % waiting time for the motor to get ready (s)
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
     if strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1 
         if strcmp(run_obj.set_up, '2P-room')
-            system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x)  ' 1 &']);
+            system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
         end
     elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
         if strcmp(run_obj.set_up, '2P-room')
