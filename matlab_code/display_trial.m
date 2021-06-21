@@ -74,7 +74,7 @@ subplot(viz_figs.fwd_ax);
 plot(t, vel_for, 'color', [0.8 0.6 0.2]);
 title('Forward velocity');
 ylabel('Forward Velocity (mm/s)');
-ylim([-2 6]);
+%ylim([-2 6]);
 xlim([0 trial_time(end)]);
 
 % Angular velocity subplot
@@ -82,7 +82,7 @@ subplot(viz_figs.ang_ax);
 plot(t, vel_yaw, 'color', [0.8 0.2 0.6]);
 title('Angular velocity');
 ylabel('Angular velocity (deg/s)');
-ylim([-10 10]);
+%ylim([-10 10]);
 xlabel('Time (s)');
 xlim([0 trial_time(end)]);
 
