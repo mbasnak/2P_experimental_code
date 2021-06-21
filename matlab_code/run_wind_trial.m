@@ -25,7 +25,7 @@ if strcmp(run_obj.set_up, '2P-room')
     MFC_flow(end) = 0; % turn off air at the end of the trial
     imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
     imaging_trigger(2:end-1) = 1.0;
-    MFC_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples) 
+    MFC_trigger = imaging_trigger; % idenfical to the imagging trigger (high throuhout the trial except for the first and last samples)
     output_data = [MFC_flow, imaging_trigger, MFC_trigger];
     queueOutputData(s, output_data);
     
@@ -59,24 +59,15 @@ delay = 1; % waiting time for the motor to get ready (s)
 
 %Run the python script that runs fictrac and other experimental conditions
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
-    if strcmp(task, 'Closed_Loop') == 1 
-        if strcmp(run_obj.set_up, 'WLI-TOBIN')
-            system(['conda activate CLwind & python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t + delay) ' "' hdf_file '" ' ' 1 &'])
-        elseif strcmp(run_obj.set_up, '2P-room')
-            system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
-        end
+    if strcmp(task, 'Closed_Loop') == 1
+        system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
     elseif strcmp(task, 'Open_Loop') == 1
-        if strcmp(run_obj.set_up, 'WLI-TOBIN')
-            system(['conda activate CLwind & python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t + delay) ' "' hdf_file '" ' ' 1 &'])
-        elseif strcmp(run_obj.set_up, '2P-room')
-            system(['python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
-        end
+        system(['python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
     else
         disp('Task not ready!')
     end
-        
-elseif strcmp(run_obj.experiment_type,'Simulus_jump')==1
-    disp('Trial type not ready!')
+elseif strcmp(run_obj.experiment_type,'Stimulus_jump')==1
+    system(['python.exe run_socket_client_wind_jump.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
 elseif strcmp(run_obj.experiment_type,'Gain_change')==1
     disp('Trial type not ready!')
 end
