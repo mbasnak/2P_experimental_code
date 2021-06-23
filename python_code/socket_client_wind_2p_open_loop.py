@@ -33,7 +33,7 @@ class SocketClient(object):
         self.wind_dur = 4  # (s) duration of wind stimulus per direction
         self.wind_counter = 0  # counter for keeping track which wind direction is currently specified
         self.wind_repeat = 5  # number of trials to repeat for each wind direction
-        self.wind_list = list(range(0, 360, 60)) * self.wind_repeat
+        self.wind_list = [0] + list(range(0, 360, 30)) * self.wind_repeat
 
         # Set up Phidget serial numbers for using two devices
         self.phidget_vision = 525577  # written on the back of the Phidget
@@ -142,7 +142,7 @@ class SocketClient(object):
                         motor_pos = int(arduino_line)  # current motor position (0-360 deg)
                         self.motor_pos_rad = np.deg2rad(motor_pos)
                         
-                         # Set analog output voltage of Phidget
+                        # Set analog output voltage of Phidget
                         output_voltage_motor = self.motor_pos_rad * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
                         self.aout_motor.setVoltage(output_voltage_motor)
 
@@ -162,7 +162,6 @@ class SocketClient(object):
                     # Receive one data frame
                     new_data = sock.recv(1024)  # buffer size, should be a relatively small power of 2
             
-                    # Uh oh?
                     if not new_data:
                         break
             
@@ -223,9 +222,13 @@ class SocketClient(object):
                         arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                         ser.write(arduino_byte)  # send to serial port     
                         
-                        print(f'wind dir: {current_wind_dir}')
+                        #print(f'wind dir: {current_wind_dir}')
                         self.wind_counter += 1  # go to the next wind direction
-                        
+
+                    # Set analog output voltage of Phidget (note different from closed-loop, due to the infrequent nature of communication)
+                    output_voltage_motor = (current_wind_dir / 360) * 10  # convert from deg to V
+                    self.aout_motor.setVoltage(output_voltage_motor)
+
                     # Display status message
                     if self.print:
                         print(f'time elapsed: {self.time_elapsed: 1.3f} s', end='')
