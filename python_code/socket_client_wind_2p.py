@@ -210,7 +210,7 @@ class SocketClient(object):
                     self.deltaheading = self.heading - self.prev_heading
 
                     # send the heading signal to Arduino
-                    self.motor_command = (self.motor_command + self.deltaheading) % (2 * np.pi)
+                    self.motor_command = (self.motor_command + self.deltaheading*self.gain_wind) % (2 * np.pi)
                     #animal_heading_360 = int(self.heading * (360 / (2 * np.pi)))  # convert from rad to deg
                     arduino_str = "H " + str(360 - np.rad2deg(self.motor_command)) + "\n"  # "H is a command used in the Arduino code to indicate heading
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string

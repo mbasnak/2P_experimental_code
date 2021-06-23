@@ -33,8 +33,8 @@ if __name__ == '__main__':
         time = float(sys.argv[2]) #...etc
         logfile = sys.argv[3]
         offset = int(sys.argv[4])
-        gain_panels = int(sys.argv[5])
-        gain_wind = int(sys.argv[6])
+        gain_panels = float(sys.argv[5])
+        gain_wind = float(sys.argv[6])
         experiment_code(experiment, time, logfile, offset, gain_panels, gain_wind)
     else:  # no command line argument provided
         experiment_code()
