@@ -17,6 +17,7 @@ s.Rate = SAMPLING_RATE; %sampling rate for the session (Jenny is using 4000 Hz)
 total_duration = run_obj.trial_t; %trial duration taken from the GUI input
 
 %% pre-allocate output data (imaging trigger)
+
 MFC_flow = zeros(SAMPLING_RATE*total_duration,1); %zeros throughout the trial
 imaging_trigger = zeros(SAMPLING_RATE*total_duration,1); %set the size for the imaging trigger
 imaging_trigger(2:end-1) = 1.0;
