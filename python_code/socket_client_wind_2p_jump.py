@@ -102,7 +102,7 @@ class SocketClient(object):
         self.bar_position = np.deg2rad(360 - self.param['offset'])
 
         self.jump = True
-        self.time_between_jumps = 10  # [s]
+        self.time_between_jumps = 90  # [s]
         self.jump_mag = 90  # [deg] jump magnitude
         self.jump_size = 0  # default value is zero
 
