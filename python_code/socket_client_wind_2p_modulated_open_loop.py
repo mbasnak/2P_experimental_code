@@ -15,6 +15,8 @@ class SocketClient(object):
 
     DefaultParam = {
         'experiment': 1,
+        'stim_speed': 30,
+        'turn_type': 'clockwise',
         'experiment_time': 30,
         'logfile_name': 'Z:/Wilson Lab/Mel/FlyOnTheBall/data',
         'logfile_auto_incr': True,
@@ -26,15 +28,11 @@ class SocketClient(object):
 
         self.param = param
         self.experiment = self.param['experiment']
+        self.stim_speed = self.param['stim_speed']
+        self.turn_type = self.param['turn_type']
         self.experiment_time = self.param['experiment_time']
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
-
-        # set up open-loop wind (hard coded for now...)
-        self.wind_dur = 4  # (s) duration of wind stimulus per direction
-        self.wind_counter = 0  # counter for keeping track which wind direction is currently specified
-        self.wind_repeat = 5  # number of trials to repeat for each wind direction
-        self.wind_list = [0] + list(range(0, 360, 30)) * self.wind_repeat
-        #self.wind_list = [0] + list(range(360, 0, -30)) * self.wind_repeat
+        self.current_wind_dir = 0
 
         # Set up Phidget serial numbers for using two devices
         self.phidget_vision = 525577  # written on the back of the Phidget
@@ -129,6 +127,7 @@ class SocketClient(object):
             # Keep receiving data from socket until FicTrac closes
             data = ""
             timeout_in_seconds = 1
+            self.time_end = time.time() #initialize turn time
 
             while not self.done:  # main loop
 
@@ -213,27 +212,28 @@ class SocketClient(object):
                     self.write_logfile_fictrac() 
 
                     # open-loop wind
-                    if self.time_elapsed > self.wind_dur * self.wind_counter:
-                        if self.wind_counter >= len(self.wind_list):
-                            break
-                        current_wind_dir = self.wind_list[self.wind_counter]
-                        
-                        # send the wind direction to Arduino
-                        arduino_str = "H " + str(current_wind_dir) + "\n"  # "H is a command used in the Arduino code to indicate heading
-                        arduino_byte = arduino_str.encode()  # convert unicode string to byte string
-                        ser.write(arduino_byte)  # send to serial port     
-                        
-                        #print(f'wind dir: {current_wind_dir}')
-                        self.wind_counter += 1  # go to the next wind direction
+                    self.time_step = (time.time()-self.time_end)
+                    if self.turn_type == 'clockwise':
+                        self.current_wind_dir = (self.current_wind_dir + (self.time_step*self.stim_speed))%360
+                    elif self.turn_type == 'counterclockwise':
+                        self.current_wind_dir = (self.current_wind_dir - (self.time_step*self.stim_speed))%360
+                    
+                    self.time_end = time.time()
+                    # send the wind direction to Arduino
+                    arduino_str = "H " + str(self.current_wind_dir) + "\n"  # "H is a command used in the Arduino code to indicate heading
+                    arduino_byte = arduino_str.encode()  # convert unicode string to byte string
+                    ser.write(arduino_byte)  # send to serial port     
+                
 
                     # Set analog output voltage of Phidget (note different from closed-loop, due to the infrequent nature of communication)
-                    output_voltage_motor = (current_wind_dir / 360) * 10  # convert from deg to V
+                    output_voltage_motor = (self.current_wind_dir / 360) * 10  # convert from deg to V
                     self.aout_motor.setVoltage(output_voltage_motor)
 
                     # Display status message
                     if self.print:
                         print(f'time elapsed: {self.time_elapsed: 1.3f} s', end='')
-                        print(f'\t wind dir: {current_wind_dir:3.0f} deg')
+                        print(f'\t wind dir: {self.current_wind_dir:3.0f} deg')
+                        print(f'\t time step: {self.time_step:3.6f} s')
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True

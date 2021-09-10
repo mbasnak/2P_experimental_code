@@ -62,7 +62,11 @@ if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
     if strcmp(task, 'Closed_Loop') == 1
         system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
     elseif strcmp(task, 'Open_Loop') == 1
-        system(['python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+        if run_obj.modulated_speed.Value == 1
+            system(['python.exe run_socket_client_wind_2p_modulated_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.stim_speed) ' ' run_obj.turn_type.Value ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+        else
+            system(['python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+        end
     else
         disp('Task not ready!')
     end
