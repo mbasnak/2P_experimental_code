@@ -10,7 +10,7 @@
 
 %% parameters
 pulse_dur = 5; %[s]
-flow_rate = 0.5; % [L/min] make sure the air is turned on!
+flow_rate = 0.2; % [L/min] make sure the air is turned on!
 
 %% setup DAQ
 set_up = '2P-room';

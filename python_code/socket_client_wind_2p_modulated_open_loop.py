@@ -233,7 +233,7 @@ class SocketClient(object):
                     if self.print:
                         print(f'time elapsed: {self.time_elapsed: 1.3f} s', end='')
                         print(f'\t wind dir: {self.current_wind_dir:3.0f} deg')
-                        print(f'\t time step: {self.time_step:3.6f} s')
+                        #print(f'\t time step: {self.time_step:3.6f} s')
 
                     if self.time_elapsed > self.experiment_time:
                         self.done = True
