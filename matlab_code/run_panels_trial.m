@@ -100,7 +100,11 @@ end
 
 function openLoop(pattern, func)
 %% begins openLoop setting in panels
-freq = 50;
+if (func == 216 | func == 217)
+    freq = 25;
+else
+    freq = 50;
+end
 Panel_com('stop');
 %set pattern number
 Panel_com('set_pattern_id', pattern);
