@@ -66,8 +66,6 @@ end
 Panel_com('start');
 
 %% start the trial
-delay = 1; % waiting time for the motor to get ready (s)
-
 %Run the python script that runs fictrac and other experimental conditions
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
     if strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1
@@ -87,6 +85,7 @@ elseif strcmp(run_obj.experiment_type,'Gain_change')==1
     disp('Trial type not ready!')
 end
 
+delay = 1.0; % (s) wait before acquiring as the initial few seconds of Arduino signal is garbage
 pause(delay)
 
 %Start the data acquisition
