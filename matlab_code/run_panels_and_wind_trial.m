@@ -57,7 +57,7 @@ if strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1
 elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
     closedLoop(run_obj.pattern_number, start_x, start_y);
 elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1
-    openLoop(run_obj.pattern_number, run_obj.function_number);
+    closedLoop(run_obj.pattern_number, start_x, start_y);  % use closedLoop so that panel is synced with motor
 else
     error('task not implemented')
 end
@@ -70,12 +70,14 @@ Panel_com('start');
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
     if strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1
         system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
-    elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1 || strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1
+    elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
         if run_obj.modulated_speed.Value == 1
             system(['python.exe run_socket_client_wind_2p_modulated_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.stim_speed) ' ' run_obj.turn_type.Value ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
         else
             system(['python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
         end
+    elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1  % make sure to use yoked_open_loop.py
+        system(['python.exe run_socket_client_wind_2p_yoked_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.stim_speed) ' ' run_obj.turn_type.Value ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
     else
         disp('Task not ready!')
     end
