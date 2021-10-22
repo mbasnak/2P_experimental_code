@@ -226,8 +226,7 @@ class SocketClient(object):
                     # Set analog output voltage YAW
                     self.bar_position = (self.bar_position + self.deltaheading*self.gain_panels) % (2 * np.pi)  # wrap around
                     self.output_voltage_yaw = (self.bar_position) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
-                    self.aout_yaw.setVoltage(self.output_voltage_yaw)
-                    self.aout_yaw_gain.setVoltage(self.output_voltage_yaw)  
+                    self.aout_yaw_gain.setVoltage(self.output_voltage_yaw)  # yaw gain, not yaw!
 
                     # Set analog output voltage Y
                     wrapped_inty = self.inty % (2 * np.pi)
