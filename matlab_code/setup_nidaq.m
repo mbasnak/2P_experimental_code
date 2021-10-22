@@ -17,7 +17,7 @@ if strcmp(setup_name, '2P-room')
     s.addDigitalChannel(Dev, 'port0/line0:1', 'OutputOnly'); % scanimage trigger, valve trigger for MFC
     
     %% Inputs
-    ai_channels_used = [1:5, 10:15];
+    ai_channels_used = [1:6, 10:15];
     aI = s.addAnalogInputChannel(Dev, ai_channels_used, 'Voltage');
     for i=1:length(ai_channels_used)
         aI(i).InputType = 'SingleEnded';
@@ -32,6 +32,7 @@ if strcmp(setup_name, '2P-room')
 %       AI.3 = Fictrac yaw
 %       AI.4 = Fictrac yaw gain
 %       AI.5 = panels x
+%       AI.6 = wind valve
 %       AI.10 = panels y
 %       AI.11 = Piezo Z
 %       AI.12 = motor position

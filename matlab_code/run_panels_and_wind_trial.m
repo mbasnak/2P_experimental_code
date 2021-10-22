@@ -56,6 +56,8 @@ if strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1
     closedLoop(run_obj.pattern_number, start_x, start_y);
 elseif strcmp(task, 'panels_Closed_Loop_X_Open_Loop_Y_wind_Closed_Loop') == 1
     closedOpenLoop(run_obj.pattern_number, run_obj.function_number, start_x, start_y);
+elseif strcmp(task, 'panels_Closed_Loop_X_Closed_Loop_Y_wind_Closed_Loop') == 1
+    closedClosedLoop(run_obj.pattern_number, start_x, start_y);    
 elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
     closedLoop(run_obj.pattern_number, start_x, start_y);
 elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1

@@ -6,6 +6,7 @@ import select
 import time
 from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageOutput import *
+import serial
 import numpy as np
 from h5_logger import H5Logger
 import random
@@ -70,10 +71,11 @@ class SocketClientBarWindJump(object):
         self.aout_y.setDeviceSerialNumber(self.phidget_vision)
         self.aout_y.setChannel(self.aout_channel_y)
         self.aout_y.openWaitForAttachment(5000)
-        self.aout_y.setVoltage(0.0)
+        self.aout_y.setVoltage(9.0)
 
-        # Set up Phidget channels in device 2 for wind (0-index)
+        # Set up Phidget channels in device 2 for wind 
         self.aout_channel_motor = 0
+        self.aout_channel_wind_valve = 2
 
         # Setup analog output motor
         self.aout_motor = VoltageOutput()
@@ -82,11 +84,24 @@ class SocketClientBarWindJump(object):
         self.aout_motor.openWaitForAttachment(5000)
         self.aout_motor.setVoltage(0.0)
 
+        # Setup analog output wind valve
+        self.aout_wind_valve = VoltageOutput()
+        self.aout_wind_valve.setDeviceSerialNumber(self.phidget_wind)
+        self.aout_wind_valve.setChannel(self.aout_channel_wind_valve)
+        self.aout_wind_valve.openWaitForAttachment(5000)
+        self.aout_wind_valve.setVoltage(0.0)
+
+
         self.print = True;
 
         # Set up socket info
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
         self.PORT = 65432         # The (receiving) host port (sock_port)
+
+        # Set up Arduino connection
+        self.COM = 'COM4'  # serial port
+        self.baudrate = 115200  # 9600
+        self.serialTimeout = 0.001 # blocking timeout for readline()
 
         self.done = False
 		
@@ -129,9 +144,10 @@ class SocketClientBarWindJump(object):
 
         # UDP
         # Open the connection (ctrl-c / ctrl-break to quit)
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-            sock.bind((self.HOST, self.PORT))
-            sock.setblocking(0)
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock,\
+         serial.Serial(self.COM, self.baudrate, timeout=self.serialTimeout) as ser:
+            sock.bind((self.HOST, self.PORT))  # takes one argument, give it as a tuple
+            sock.setblocking(False)  # make it non-blocking
     
             # Keep receiving data until FicTrac closes
             data = ""
@@ -232,7 +248,7 @@ class SocketClientBarWindJump(object):
 
                     # Specify the time conditions to set the other voltages
                     # Specify the bar jumps
-                    if ((math.floor(self.time_elapsed)==1380 OR math.floor(self.time_elapsed)==2340) and (self.bar_jump == True)):
+                    if ((math.floor(self.time_elapsed)==1380 or math.floor(self.time_elapsed)==2340) and (self.bar_jump == True)):
                         self.bar_jump_size = math.radians(120)
                         self.bar_jump = False
                     else:
@@ -262,18 +278,36 @@ class SocketClientBarWindJump(object):
                     ser.write(arduino_byte)  # send to serial port 
 
                     # Specify the changes in bar intensity
-                    if ((math.floor(self.time_elapsed)==600 OR math.floor(self.time_elapsed)==1140 OR math.floor(self.time_elapsed)==1620 OR math.floor(self.time_elapsed)==2100 OR math.floor(self.time_elapsed)==2580) and (self.bar == True)):
-                        self.aout_channel_ydimension.setVoltage(5)
+                    #turn off the bar
+                    if ((math.floor(self.time_elapsed)==600 or math.floor(self.time_elapsed)==1140 or math.floor(self.time_elapsed)==1620 or math.floor(self.time_elapsed)==2100 or math.floor(self.time_elapsed)==2580) and (self.bar == True)):
                         self.bar = False
-                    else:
-                        self.aout_channel_ydimension.setVoltage(10)
-
-                    if ((math.floor(self.time_elapsed)==1139 OR math.floor(self.time_elapsed)==1619 OR math.floor(self.time_elapsed)==2099 OR math.floor(self.time_elapsed)==2579) and (self.bar == False)):
+                    #turn on the bar
+                    if ((math.floor(self.time_elapsed)==900 or math.floor(self.time_elapsed)==1260 or math.floor(self.time_elapsed)==1740 or math.floor(self.time_elapsed)==2220) and (self.bar == False)):
                         self.bar = True
+
+                    if self.bar == False:
+                        y_dim_voltage = 5.0
+                    else:
+                        y_dim_voltage = 9.0
+
+                    self.aout_ydim.setVoltage(y_dim_voltage)
 
 
                     # Specify the changes in wind inensity
-    
+                    #turn on the wind
+                    if ((math.floor(self.time_elapsed)==10 or math.floor(self.time_elapsed)==1140 or math.floor(self.time_elapsed)==1620 or math.floor(self.time_elapsed)==2100 or math.floor(self.time_elapsed)==2580) and (self.wind == False)):
+                        self.wind = True
+                    #turn off the wind
+                    if ((math.floor(self.time_elapsed)==20 or math.floor(self.time_elapsed)==1500 or math.floor(self.time_elapsed)==1980 or math.floor(self.time_elapsed)==2460) and (self.wind == True)):                    
+                   # if ((math.floor(self.time_elapsed)==1030 or math.floor(self.time_elapsed)==1500 or math.floor(self.time_elapsed)==1980 or math.floor(self.time_elapsed)==2460) and (self.wind == True)):
+                        self.wind = False
+
+                    if self.wind == False:
+                        wind_valve = 0.0
+                    else:
+                        wind_valve = 5.0
+
+                    self.aout_wind_valve.setVoltage(wind_valve)
 
 
                     # Save fictrac data in HDF5 file
@@ -282,9 +316,10 @@ class SocketClientBarWindJump(object):
                     # Display status message
                     if self.print:
                         print(f'time elapsed: {self.time_elapsed: 1.3f}', end='')
-                        print(f'  motor command: {np.rad2deg(self.motor_command):3.0f}', end='')
-                        print(f'  motor pos: {motor_pos:3.0f}', end='')
-                        print(f'  bar pos: {np.rad2deg(self.bar_position):3.0f}')
+                        #print(f'  motor command: {np.rad2deg(self.motor_command):3.0f}', end='')
+                        #print(f'  motor pos: {motor_pos:3.0f}', end='')
+                        #print(f'  bar pos: {np.rad2deg(self.bar_position):3.0f}')
+                        print(f'  ydim volt: {y_dim_voltage:3.0f}')
                         #print(f'  delta heading: {np.rad2deg(self.deltaheading):3.0f}')
 
                     if self.time_elapsed > self.experiment_time:
@@ -312,7 +347,6 @@ class SocketClientBarWindJump(object):
             'motor': self.motor_pos_rad,
             'motor_command': self.motor_command,
             'bar_position': self.bar_position,
-            'out_voltage_yaw': self.output_voltage_yaw
         }
         self.logger_fictrac.add(log_data)
 
