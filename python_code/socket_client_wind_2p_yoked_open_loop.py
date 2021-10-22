@@ -36,19 +36,24 @@ class SocketClient(object):
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
         self.current_wind_dir = 0
         self.offset_adjust = 15  # use this offset to make bars perfectly aligned to wind, hard coded (deg)
+        self.fly_heading = 0  # for calculating heading of the fly (rad)
+        self.first_time_in_loop = True
 
-        # Set up Phidget serial numbers for using two devices
-        self.phidget_vision = 525577  # written on the back of the Phidget
-        self.phidget_wind = 589946  # for sending the position of the motor to NI-DAQ
+        self.print = True  # for printing the current values on the console
 
-        # Set up Phidget channels in device 1 for vision (0-index)
-        self.aout_channel_yaw = 0
-        self.aout_channel_x = 1
-        self.aout_channel_yaw_gain = 2
-        self.aout_channel_y = 3
+        # set voltage range for Phidget
         self.aout_max_volt = 10.0
         self.aout_min_volt = 0.0
 
+        # set up two Phidgets
+        self.phidget_vision = 525577  # for writing Fictrac x, y, and panels (yaw_gain)
+        self.phidget_wind = 589946  # for sending the position of the motor to NI-DAQ, actual animal yaw
+
+        # Set up Phidget channels in device 1 for vision (0-index)
+        self.aout_channel_x = 1
+        self.aout_channel_y = 3
+        self.aout_channel_yaw_gain = 2
+        
         # Setup analog output X
         self.aout_x = VoltageOutput()
         self.aout_x.setDeviceSerialNumber(self.phidget_vision)
@@ -56,22 +61,23 @@ class SocketClient(object):
         self.aout_x.openWaitForAttachment(5000)
         self.aout_x.setVoltage(0.0)
 
-        # Setup analog output YAW gain
+        # Setup analog output Y
+        self.aout_y = VoltageOutput()
+        self.aout_y.setDeviceSerialNumber(self.phidget_vision)
+        self.aout_y.setChannel(self.aout_channel_y)
+        self.aout_y.openWaitForAttachment(5000)
+        self.aout_y.setVoltage(0.0)
+
+        # Setup analog output YAW gain (use this channel to control panel bar position)
         self.aout_yaw_gain = VoltageOutput()
         self.aout_yaw_gain.setDeviceSerialNumber(self.phidget_vision)
         self.aout_yaw_gain.setChannel(self.aout_channel_yaw_gain)
         self.aout_yaw_gain.openWaitForAttachment(5000)
         self.aout_yaw_gain.setVoltage(0.0)
 
-        # Setup analog output Y
-        # self.aout_y = VoltageOutput()
-        # self.aout_y.setDeviceSerialNumber(self.phidget_vision)
-        # self.aout_y.setChannel(self.aout_channel_y)
-        # self.aout_y.openWaitForAttachment(5000)
-        # self.aout_y.setVoltage(0.0)
-
         # Set up Phidget channels in device 2 for wind (0-index)
         self.aout_channel_motor = 0
+        self.aout_channel_yaw = 1  # for recording the actual yaw of the fly
 
         # Setup analog output motor
         self.aout_motor = VoltageOutput()
@@ -80,7 +86,12 @@ class SocketClient(object):
         self.aout_motor.openWaitForAttachment(5000)
         self.aout_motor.setVoltage(0.0)
 
-        self.print = True
+        # Setup analog output motor
+        self.aout_yaw = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_wind)
+        self.aout_yaw.setChannel(self.aout_channel_yaw)
+        self.aout_yaw.openWaitForAttachment(5000)
+        self.aout_yaw.setVoltage(0.0)
 
         # Set up socket info for connecting with the FicTrac
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
@@ -181,7 +192,7 @@ class SocketClient(object):
                     self.frame = int(toks[1])  # frame counter
                     self.posx = float(toks[15])  # integrated x position (rad)
                     self.posy = float(toks[16])  # integrated y position (rad)
-                    self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rad)
+                    #self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rad)
                     self.intx = float(toks[20])  # integrated x position (rad) of the sphere in lab coord neglecting heading
                     self.inty = float(toks[21])  # integrated y position (rad) of the sphere in lab coord neglecting heading
                     self.timestamp = float(toks[22])  # frame capture time (ms) since epoch
@@ -200,39 +211,46 @@ class SocketClient(object):
                     ser.write(arduino_byte)  # send to serial port     
                 
                     # Set analog output voltage of Phidget (note different from closed-loop, due to the infrequent nature of communication)
-                    output_voltage_motor = (self.current_wind_dir / 360) * 10  # convert from deg to V
+                    output_voltage_motor = (self.current_wind_dir / 360) * (self.aout_max_volt-self.aout_min_volt)  # convert from deg to V
                     self.aout_motor.setVoltage(output_voltage_motor)
+                   
+                    # open-loop bar: set analog output voltage YAW GAIN (note the sign flip)
+                    self.current_bar_pos = (360 - self.current_wind_dir - self.bar_offset + self.offset_adjust) % 360
+                    output_voltage_yaw = self.current_bar_pos * (self.aout_max_volt - self.aout_min_volt) / 360
+                    self.aout_yaw_gain.setVoltage(output_voltage_yaw)  # yaw gain, not yaw!
 
-
-                    ## Set Phidget voltages using open-loop wind
+                    ## Write FicTrac data to Phidget
                     # Set analog output voltage X
                     wrapped_intx = (self.intx % (2 * np.pi))                   
                     output_voltage_x = wrapped_intx * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
                     self.aout_x.setVoltage(output_voltage_x)
 
-                    # Set analog output voltage YAW GAIN (note the sign flip)
-                    self.current_bar_pos = (360 - self.current_wind_dir - self.bar_offset + self.offset_adjust) % 360
-                    output_voltage_yaw = self.current_bar_pos * (self.aout_max_volt - self.aout_min_volt) / 360
-                    self.aout_yaw_gain.setVoltage(output_voltage_yaw)  # yaw gain, not yaw!
-                    #self.current_bar_pos = (360 - self.current_wind_dir) + self.bar_offset  # deg
-                    #print(f'bar pos: {self.current_bar_pos}')
-                    #output_voltage_yaw = (np.deg2rad(self.current_bar_pos)) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
-                    #self.aout_yaw_gain.setVoltage(output_voltage_yaw)  # use yaw gain channel to control panels, not yaw!
-
                     # Set analog output voltage Y
-                    #wrapped_inty = self.inty % (2 * np.pi)
-                    #output_voltage_y = wrapped_inty * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
-                    #self.aout_y.setVoltage(output_voltage_y)
+                    wrapped_inty = self.inty % (2 * np.pi)
+                    output_voltage_y = wrapped_inty * (self.aout_max_volt - self.aout_min_volt) / (2 * np.pi)
+                    self.aout_y.setVoltage(output_voltage_y)
+
+                    # Set analog output voltage YAW (on the wind Phidget, not vision Phidget)
+                    if self.first_time_in_loop:
+                        self.prev_heading = float(toks[17])
+                        self.first_time_in_loop = False
+                    else:
+                        self.prev_heading = self.heading
+                    self.heading = float(toks[17])  # integrated heading direction of the animal in lab coords (rad)
+                    self.deltaheading = self.heading - self.prev_heading
+                    self.fly_heading = (self.fly_heading + self.deltaheading) % (2 * np.pi)  # wrap around
+                    self.output_voltage_yaw = (self.fly_heading) * (self.aout_max_volt-self.aout_min_volt) / (2 * np.pi)
+                    self.aout_yaw.setVoltage(self.output_voltage_yaw)
+
 
                     # Save fictrac data in HDF5 file
                     self.write_logfile_fictrac() 
 
-                    
-
                     # Display status message
                     if self.print:
                         print(f'time elapsed: {self.time_elapsed: 1.3f} s', end='')
-                        print(f'\t wind dir: {self.current_wind_dir:3.0f} deg')
+                        print(f'\t wind dir: {self.current_wind_dir:3.0f} deg', end='')
+                        print(f'\t fly yaw: {np.rad2deg(self.fly_heading):3.0f} deg')
                         #print(f'\t time step: {self.time_step:3.6f} s')
 
                     if self.time_elapsed > self.experiment_time:

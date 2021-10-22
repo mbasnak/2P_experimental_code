@@ -69,7 +69,11 @@ for i = 1:task_cnt
         cur_trial_corename = [cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
         [MFC_data,MFC_time] = run_MFC(run_obj); 
         [trial_bdata, trial_time] = run_panels_and_wind_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
-        [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial_both(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
+        if strcmp(cur_task, 'panels_Open_Loop_wind_Open_Loop') == 1  % yoked wind + bar open-loop (needs to be separate since yaw is recorded on a different channel)
+            [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial_both_yoked_OL(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
+        else % all other trials
+            [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial_both(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
+        end
         save([run_obj.experiment_ball_dir,'\MFC_data','_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1) '.mat'],'MFC_data','MFC_time')
         
     %if not using the panels or the wind

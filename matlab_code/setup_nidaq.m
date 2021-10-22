@@ -30,14 +30,14 @@ if strcmp(setup_name, '2P-room')
 %       AI.1 = Fictrac x
 %       AI.2 = Fictrac y
 %       AI.3 = Fictrac yaw
-%       AI.4 = Panels yaw gain
+%       AI.4 = Fictrac yaw gain
 %       AI.5 = panels x
-%       AI.6 = panels y
-%       AI.7 = Piezo Z
-%       AI.8 = motor position
-%       AI.9 = mass flow controller (copy of control)
-%       AI.10 = mass flow controller (monitor)
-%       AI.11 = Pockels cell sensor (monitor)
+%       AI.10 = panels y
+%       AI.11 = Piezo Z
+%       AI.12 = motor position
+%       AI.13 = mass flow controller (copy of control)
+%       AI.14 = mass flow controller (monitor)
+%       AI.15 = Fictrac yaw (used during yoked wind + bar open-loop)
 %
 % Output channels:
 %
