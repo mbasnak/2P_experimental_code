@@ -78,8 +78,8 @@ if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
         else
             system(['python.exe run_socket_client_wind_2p_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
         end
-    elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1  % make sure to use yoked_open_loop.py
-        system(['python.exe run_socket_client_wind_2p_yoked_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.stim_speed) ' ' run_obj.turn_type.Value ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+    elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1  % make sure to use yoked_open_loop.py to sync panels and wind
+        system(['python.exe run_socket_client_wind_2p_yoked_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.stim_speed) ' ' run_obj.turn_type.Value ' ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
     else
         disp('Task not ready!')
     end
