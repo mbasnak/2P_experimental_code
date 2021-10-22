@@ -22,7 +22,7 @@ This code has been tested using
 | AI12 | 8 | motor position | wind device|
 | AI13 | 9 | MFC (control) | copy of the control signal |
 | AI14 | 10 | MFC (monitor) | 0-5V corresponds to 0-2L/min |
-| AI15 | 11 | sensor signal from Pockels cell | for monitoring laser power |
+| AI15 | 11 | Fictrac yaw (backup) | used for yoked wind+bar open-loop |
 | AO0 |  | mass flow controller (control) | 0-5V corresponds to 0-2L/min |
 | DO0 |  | imaging trigger| ScanImage |
 | DO1 |  | valve ON/OFF | MFC |
