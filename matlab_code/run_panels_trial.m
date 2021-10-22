@@ -53,7 +53,7 @@ if ( strcmp(task, 'Closed_Loop') == 1 )
 elseif ( strcmp(task, 'Open_Loop') == 1 )
     openLoop(run_obj.pattern_number, run_obj.function_number);
 elseif ( strcmp(task, 'Closed_Loop_X_Open_Loop_Y') == 1)
-    closedOpenLoop(run_obj.pattern_number, run_obj.function_number, start); 
+    closedOpenLoop(run_obj.pattern_number, run_obj.function_number, start_x,start_y); 
 elseif ( strcmp(task, 'Closed_Loop_X_Closed_Loop_Y') == 1)
     closedClosedLoop(run_obj.pattern_number, start_x, start_y); 
 end

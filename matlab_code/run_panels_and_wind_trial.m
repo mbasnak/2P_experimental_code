@@ -54,6 +54,8 @@ start_y = round(mod(((360 - run_obj.start_pos_y)*96/360) + 1, 96));
 
 if strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1
     closedLoop(run_obj.pattern_number, start_x, start_y);
+elseif strcmp(task, 'panels_Closed_Loop_X_Open_Loop_Y_wind_Closed_Loop') == 1
+    closedOpenLoop(run_obj.pattern_number, run_obj.function_number, start_x, start_y);
 elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
     closedLoop(run_obj.pattern_number, start_x, start_y);
 elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1
@@ -68,7 +70,7 @@ Panel_com('start');
 %% start the trial
 %Run the python script that runs fictrac and other experimental conditions
 if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
-    if strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1
+    if (strcmp(task, 'panels_Closed_Loop_wind_Closed_Loop') == 1 | strcmp(task, 'panels_Closed_Loop_X_Open_Loop_Y_wind_Closed_Loop') == 1)
         system(['python.exe run_socket_client_wind.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
     elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
         if run_obj.modulated_speed.Value == 1
@@ -83,6 +85,8 @@ if (strcmp(run_obj.experiment_type,'Spontaneous_walking')==1)
     end
 elseif strcmp(run_obj.experiment_type,'Stimulus_jump')==1
     system(['python.exe run_socket_client_wind_jump.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
+elseif strcmp(run_obj.experiment_type,'Bar_wind_jump')==1
+    system(['python.exe run_socket_client_bar_wind_jump.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
 elseif strcmp(run_obj.experiment_type,'Gain_change')==1
     disp('Trial type not ready!')
 end
