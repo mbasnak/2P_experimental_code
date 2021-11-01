@@ -78,6 +78,8 @@ class SocketClient(object):
 
         # Set up Phidget channels in device 2 for wind (0-index)
         self.aout_channel_motor = 0
+        self.aout_channel_yaw = 1  # for recording the actual yaw of the fly
+        self.aout_channel_wind_valve = 2
 
         # Setup analog output motor
         self.aout_motor = VoltageOutput()
@@ -85,6 +87,20 @@ class SocketClient(object):
         self.aout_motor.setChannel(self.aout_channel_motor)
         self.aout_motor.openWaitForAttachment(5000)
         self.aout_motor.setVoltage(0.0)
+
+        # Setup analog output for yaw
+        self.aout_yaw = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_wind)
+        self.aout_yaw.setChannel(self.aout_channel_yaw)
+        self.aout_yaw.openWaitForAttachment(5000)
+        self.aout_yaw.setVoltage(0.0)
+
+        # Setup analog output wind valve
+        self.aout_wind_valve = VoltageOutput()
+        self.aout_wind_valve.setDeviceSerialNumber(self.phidget_wind)
+        self.aout_wind_valve.setChannel(self.aout_channel_wind_valve)
+        self.aout_wind_valve.openWaitForAttachment(5000)
+        self.aout_wind_valve.setVoltage(0.0)
 
         self.print = True
 
@@ -131,6 +147,7 @@ class SocketClient(object):
             timeout_in_seconds = 1
 
             while not self.done:  # main loop
+                self.aout_wind_valve.setVoltage(5.0)  # keep the wind on for the duration of the trial
 
                 motor_pos = np.nan
                 self.motor_pos_rad = np.nan  # default value before receiving the data
@@ -236,15 +253,19 @@ class SocketClient(object):
                         print(f'\t wind dir: {current_wind_dir:3.0f} deg')
 
                     if self.time_elapsed > self.experiment_time:
-                        self.done = True
+                        self.done = True                        
                         break
 
             # go back to 0 deg at the end of the trial            
             arduino_str = "H " + str(0) + "\n"  # "H is a command used in the Arduino code to indicate heading
             arduino_byte = arduino_str.encode()  # convert unicode string to byte string       
             ser.write(arduino_byte)  # send to serial port  
-            print('Trial finished - quitting!')
 
+            print('hello')
+            breakpoint()
+            self.aout_wind_valve.setVoltage(0.0)  # turn the wind off for the duration of the trial
+            
+            print('Trial finished - quitting!')
 
     #define function to log data to hdf5 file
     def write_logfile_fictrac(self):

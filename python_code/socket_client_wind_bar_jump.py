@@ -282,7 +282,7 @@ class SocketClientWindBarJump(object):
 
                     # Specify the changes in bar intensity
                     #turn off the bar
-                    if ((math.floor(self.time_elapsed)==1020 or math.floor(self.time_elapsed)==1500 or math.floor(self.time_elapsed)==1980 or math.floor(self.time_elapsed)== 2460) and (self.bar == True)):
+                    if ((math.floor(self.time_elapsed)==1020 or math.floor(self.time_elapsed)==1500 or math.floor(self.time_elapsed)==1980 or math.floor(self.time_elapsed)== 2460 or math.floor(self.time_elapsed)== 2700) and (self.bar == True)):
                         self.bar = False
                     #turn on the bar
                     if ((math.floor(self.time_elapsed)==600 or math.floor(self.time_elapsed)==1140 or math.floor(self.time_elapsed)==1620 or math.floor(self.time_elapsed)==2100 or math.floor(self.time_elapsed)==2580) and (self.bar == False)):
@@ -325,13 +325,17 @@ class SocketClientWindBarJump(object):
                         print(f'  delta heading: {np.rad2deg(self.deltaheading):3.0f}')
 
                     if self.time_elapsed > self.experiment_time:
+                        self.aout_wind_valve.setVoltage(5.0)
                         self.done = True
                         break
 
             # go back to 0 deg at the end of the trial            
             arduino_str = "H " + str(0) + "\n"  # "H is a command used in the Arduino code to indicate heading
             arduino_byte = arduino_str.encode()  # convert unicode string to byte string       
-            ser.write(arduino_byte)  # send to serial port            
+            ser.write(arduino_byte)  # send to serial port
+
+            self.aout_wind_valve.setVoltage(0.0)  # turn the wind off at the end of the trial
+
             print('Trial finished - quitting!')
 
 
