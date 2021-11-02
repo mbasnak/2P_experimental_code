@@ -92,7 +92,7 @@ class SocketClientWindBarJump(object):
         self.aout_wind_valve.setVoltage(0.0)
 
 
-        self.print = True;
+        self.print = True
 
         # Set up socket info
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
@@ -333,8 +333,6 @@ class SocketClientWindBarJump(object):
             arduino_str = "H " + str(0) + "\n"  # "H is a command used in the Arduino code to indicate heading
             arduino_byte = arduino_str.encode()  # convert unicode string to byte string       
             ser.write(arduino_byte)  # send to serial port
-
-            self.aout_wind_valve.setVoltage(0.0)  # turn the wind off at the end of the trial
 
             print('Trial finished - quitting!')
 

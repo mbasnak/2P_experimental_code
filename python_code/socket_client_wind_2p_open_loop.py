@@ -261,9 +261,7 @@ class SocketClient(object):
             arduino_byte = arduino_str.encode()  # convert unicode string to byte string       
             ser.write(arduino_byte)  # send to serial port  
 
-            print('hello')
-            breakpoint()
-            self.aout_wind_valve.setVoltage(0.0)  # turn the wind off for the duration of the trial
+            self.aout_wind_valve.setVoltage(0.0)  # turn the wind off at the end of the trial
             
             print('Trial finished - quitting!')
 
