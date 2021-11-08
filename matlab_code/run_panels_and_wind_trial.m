@@ -95,7 +95,16 @@ elseif strcmp(run_obj.experiment_type,'Bar_wind_jump')==1
     elseif choice == 1
         system(['python.exe run_socket_client_wind_bar_jump.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
         disp('wind first');
-    end        
+    end  
+elseif strcmp(run_obj.experiment_type,'Bar_wind_many_jumps')==1
+    choice = randi([0,1], 1); %randomize the cue that starts
+    if choice == 0
+        system(['python.exe run_socket_client_bar_wind_many_jumps.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
+        disp('bar first');
+    elseif choice == 1
+        system(['python.exe run_socket_client_wind_bar_many_jumps.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
+        disp('wind first');
+    end  
 elseif strcmp(run_obj.experiment_type,'Gain_change')==1
     disp('Trial type not ready!')
 end
