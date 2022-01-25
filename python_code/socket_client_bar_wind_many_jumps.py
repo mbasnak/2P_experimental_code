@@ -249,14 +249,14 @@ class SocketClientBarWindManyJumps(object):
 
                     # Specify the time conditions to set the other voltages
                     # Specify the bar jumps
-                    if ((math.floor(self.time_elapsed)==1380 or math.floor(self.time_elapsed)==1980 or math.floor(self.time_elapsed)==2580) and (self.bar_jump == True)):
+                    if ((math.floor(self.time_elapsed)==1200 or math.floor(self.time_elapsed)==1800 or math.floor(self.time_elapsed)==2400 or math.floor(self.time_elapsed)==3000) and (self.bar_jump == True)):
                         self.bar_jump_size = random.choice([math.radians(-120),math.radians(120)])
                         self.bar_jump = False
                     else:
                         self.bar_jump_size = 0
 
                    #reset self.jump 1 sec before the bar jump has to happen
-                    if ((math.floor(self.time_elapsed)==1979 or math.floor(self.time_elapsed)==2579) and (self.bar_jump == False)):
+                    if ((math.floor(self.time_elapsed)==1799 or math.floor(self.time_elapsed)==2399 or math.floor(self.time_elapsed)==2999) and (self.bar_jump == False)):
                         self.bar_jump = True
 
                     self.heading_with_gain = (self.heading_with_gain + self.deltaheading*self.gain_yaw + self.bar_jump_size) % (2*np.pi)
@@ -265,14 +265,14 @@ class SocketClientBarWindManyJumps(object):
 
 
                     # Specify the wind jumps
-                    if ((math.floor(self.time_elapsed)==1680 or math.floor(self.time_elapsed)==2280 or math.floor(self.time_elapsed)==2880) and (self.wind_jump == True)):
+                    if ((math.floor(self.time_elapsed)==1500 or math.floor(self.time_elapsed)==2100 or math.floor(self.time_elapsed)==2700 or math.floor(self.time_elapsed)==3300) and (self.wind_jump == True)):
                         self.wind_jump_size = random.choice([math.radians(-120),math.radians(120)])
                         self.wind_jump = False
                     else:
                         self.wind_jump_size = 0
 
                     #reset self.jump 1 sec before the wind jump has to happen
-                    if ((math.floor(self.time_elapsed)==2279 or math.floor(self.time_elapsed)==2879) and (self.wind_jump == False)):
+                    if ((math.floor(self.time_elapsed)==2099 or math.floor(self.time_elapsed)==2699 or math.floor(self.time_elapsed)==3299) and (self.wind_jump == False)):
                         self.wind_jump = True
 
 
@@ -287,10 +287,10 @@ class SocketClientBarWindManyJumps(object):
 
                     # Specify the changes in bar intensity
                     #turn off the bar
-                    if ((math.floor(self.time_elapsed)==600 or math.floor(self.time_elapsed)==1140 or math.floor(self.time_elapsed)==3000) and (self.bar == True)):
+                    if ((math.floor(self.time_elapsed)==600) and (self.bar == True)):
                         self.bar = False
                     #turn on the bar
-                    if ((math.floor(self.time_elapsed)==900 or math.floor(self.time_elapsed)==1260) and (self.bar == False)):
+                    if ((math.floor(self.time_elapsed)==900) and (self.bar == False)):
                         self.bar = True
 
                     if self.bar == False:
@@ -303,11 +303,8 @@ class SocketClientBarWindManyJumps(object):
 
                     # Specify the changes in wind inensity
                     #turn on the wind
-                    if ((math.floor(self.time_elapsed)==600 or math.floor(self.time_elapsed)==1140) and (self.wind == False)):
+                    if ((math.floor(self.time_elapsed)==600) and (self.wind == False)):
                         self.wind = True
-                    #turn off the wind
-                    if ((math.floor(self.time_elapsed)==1020 or math.floor(self.time_elapsed)==3000) and (self.wind == True)):                    
-                        self.wind = False
 
                     if self.wind == False:
                         wind_valve = 0.0
