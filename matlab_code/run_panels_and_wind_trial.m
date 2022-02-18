@@ -109,6 +109,8 @@ elseif strcmp(run_obj.experiment_type,'Bar_wind_many_jumps')==1
     end  
 elseif strcmp(run_obj.experiment_type,'Gain_change')==1
     disp('Trial type not ready!')
+elseif strcmp(run_obj.experiment_type, 'TO_long_open_loop') == 1
+    system(['python.exe run_socket_client_wind_2p_long_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.stim_speed) ' ' run_obj.turn_type.Value ' ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
 end
 
 delay = 1.0; % (s) wait before acquiring as the initial few seconds of Arduino signal is garbage

@@ -43,7 +43,7 @@ class SocketClient(object):
         self.print = True  # for printing the current values on the console
 
         # specify the time epochs in the experiment
-        self.baseline = 5 # 40  # [s] baseline period when neither stimulus is on
+        self.time_baseline = 5 # 40  # [s] baseline period when neither stimulus is on
         self.epoch_length = 10 # 240  # [s] length of an individual epoch
         self.epoch_number = 4  # number of epochs
         self.epoch_counter = 1  # a counter that keeps track of the current epoch number 
