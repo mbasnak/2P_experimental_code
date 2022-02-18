@@ -4,7 +4,7 @@
 %%% Tatsuo Okubo
 %%% 2021-03-03
 
-function [ t, stim_pos_panel_x, stim_pos_panel_y, stim_pos_motor, vel_for, vel_yaw, fly_pos] = process_data_both_yoked_OL( trial_time, trial_data, num_x_pixels)
+function [ t, stim_pos_panel_x, stim_pos_panel_y, stim_pos_motor, vel_for, vel_yaw, fly_pos, mfc_monitor] = process_data_both_yoked_OL( trial_time, trial_data, num_x_pixels)
 
 %% import acquisition settings
 
@@ -40,5 +40,9 @@ downsampled.motor = resample_new(motor, sampRate_new, settings.sampRate);
 downsRad.motor = downsampled.motor .* 2 .* pi ./ 10; % from voltage to radian
 downsDeg.motor = downsRad.motor .* 360 ./ (2 * pi); 
 stim_pos_motor = downsDeg.motor;
+
+%% Get the MFC flow rate
+mfc = trial_data(:, settings.mfc_monitor) * 2 / 5;  % converting from V to L/min
+mfc_monitor = resample_new(mfc, sampRate_new, settings.sampRate); 
 
 end

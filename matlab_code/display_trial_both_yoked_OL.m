@@ -11,7 +11,7 @@ settings = nidaq_settings;
 %% get fly position and velocity, as well as stim position
 
 x_pixels = 96; %= number of x dimensions in the panels (i.e., 96 pixels for the 360 arena)
-[ t, stim_pos_panel_x, stim_pos_panel_y, stim_pos_motor, vel_for, vel_yaw, fly_pos] = process_data_both_yoked_OL( trial_time, trial_data, x_pixels); 
+[ t, stim_pos_panel_x, stim_pos_panel_y, stim_pos_motor, vel_for, vel_yaw, fly_pos, mfc_monitor] = process_data_both_yoked_OL( trial_time, trial_data, x_pixels); 
 
 %% Display trial results
 
@@ -60,15 +60,19 @@ viz_figs.fly_trajectory = subtightplot(6,8,[43:45], [.1 .05], [.1, .1], [.1, .1]
 subplot(viz_figs.stim_ax);
 plot(t, stim_pos_panel_x, 'c');
 hold on
-plot(t, stim_pos_panel_y, 'g'); 
 plot(t, stim_pos_motor, 'm');
-ylim([0 360]);
+ylim([-180 180]);
 xlim([0 trial_time(end)]);
 set(gca, 'ytick', 0:90:360)
 title('Stimulus position');
-legend('panel_x', 'panel_y', 'motor')
-legend boxoff
 ylabel('Deg');
+
+yyaxis right
+plot(t, mfc_monitor, 'k')
+ylabel('Flow (L/min)')
+
+legend('panel_x', 'motor', 'MFC')
+legend boxoff
 
 %Fly position
 subplot(viz_figs.fly_ax);

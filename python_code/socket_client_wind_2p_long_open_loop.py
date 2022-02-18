@@ -35,7 +35,7 @@ class SocketClient(object):
         self.bar_offset = self.param['bar_offset']  # bar relative to wind [deg]
         self.experiment_time = self.param['experiment_time']
         self.time_start = time.time()  # get the current time and use it as a ref for elapsed time
-        self.current_wind_dir = 0
+        self.stim_dir = 0
         self.offset_adjust = 15  # use this offset to make bars perfectly aligned to wind, hard coded (deg)
         self.fly_heading = 0  # for calculating heading of the fly (rad)
         self.first_time_in_loop = True
@@ -43,10 +43,9 @@ class SocketClient(object):
         self.print = True  # for printing the current values on the console
 
         # specify the time epochs in the experiment
-        self.time_baseline = 5 # 40  # [s] baseline period when neither stimulus is on
-        self.epoch_length = 10 # 240  # [s] length of an individual epoch
-        self.epoch_number = 4  # number of epochs
-        self.epoch_counter = 1  # a counter that keeps track of the current epoch number 
+        self.time_baseline = 10 # 40  # [s] baseline period when the wind is off
+        self.epoch_dur = 30 # 240  # [s] duration of an individual epoch
+        self.epoch_num = 4  # total number of epochs
 
         # set voltage range for Phidget
         self.aout_max_volt = 10.0
@@ -218,27 +217,49 @@ class SocketClient(object):
                     else:
                         self.aout_wind_valve.setVoltage(5.0)  # turn the wind on during the rest of the trial
                     
-                    # open-loop wind
-                    self.time_step = (time.time()-self.time_end)
+                    self.time_step = (time.time()-self.time_end)  # difference between now and the previous time step [s]
                     if self.turn_type == 'clockwise':
-                        self.current_wind_dir = (self.current_wind_dir + (self.time_step * self.stim_speed)) % 360
+                        self.stim_dir = (self.stim_dir + (self.time_step * self.stim_speed)) % 360
                     elif self.turn_type == 'counterclockwise':
-                        self.current_wind_dir = (self.current_wind_dir - (self.time_step * self.stim_speed)) % 360
+                        self.stim_dir = (self.stim_dir - (self.time_step * self.stim_speed)) % 360
 
-                    self.time_end = time.time()
+                    self.time_end = time.time()  # save the current time step
+                    
+                    # do things different depending on the epoch
+                    if self.time_elapsed < self.time_baseline:
+                        self.epoch_counter = 0
+                    else:
+                        self.epoch_counter = ((self.time_elapsed - self.time_baseline) // self.epoch_dur) + 1
+
+                    if self.epoch_counter == 0 or self.epoch_counter == 1 or self.epoch_counter == 3:  # both bar and wind in open loop
+                        self.current_wind_dir = self.stim_dir
+                        self.current_bar_pos = self.stim_dir
+
+                    elif self.epoch_counter == 2:
+                        self.current_wind_dir = 0  # wind stationary at 0 deg
+                        self.current_bar_pos = self.stim_dir
+                    
+                    elif self.epoch_counter == 4:
+                        self.current_wind_dir = self.stim_dir
+                        self.current_bar_pos = 0
+                                        
+                    else:
+                        self.done = True  # end the experiment
+
                     # send the wind direction to Arduino
                     arduino_str = "H " + str(self.current_wind_dir) + "\n"  # "H is a command used in the Arduino code to indicate heading
                     arduino_byte = arduino_str.encode()  # convert unicode string to byte string
                     ser.write(arduino_byte)  # send to serial port     
-                
-                    # Set analog output voltage of Phidget (note different from closed-loop, due to the infrequent nature of communication)
+                    
+                    # set analog output voltage of Phidget so that the motor position could be recorded on NI-DAQ
                     output_voltage_motor = (self.current_wind_dir / 360) * (self.aout_max_volt-self.aout_min_volt)  # convert from deg to V
                     self.aout_motor.setVoltage(output_voltage_motor)
-                   
+                    
                     # open-loop bar: set analog output voltage YAW GAIN (note the sign flip)
-                    self.current_bar_pos = (360 - self.current_wind_dir - self.bar_offset + self.offset_adjust) % 360
-                    output_voltage_yaw = self.current_bar_pos * (self.aout_max_volt - self.aout_min_volt) / 360
+                    self.current_bar_pos_adjusted = (360 - self.current_bar_pos - self.bar_offset + self.offset_adjust) % 360
+                    output_voltage_yaw = self.current_bar_pos_adjusted * (self.aout_max_volt - self.aout_min_volt) / 360
                     self.aout_yaw_gain.setVoltage(output_voltage_yaw)  # yaw gain, not yaw!
+
 
                     ## Write FicTrac data to Phidget
                     # Set analog output voltage X
@@ -269,14 +290,14 @@ class SocketClient(object):
 
                     # Display status message
                     if self.print:
-                        print(f'time elapsed: {self.time_elapsed: 1.3f} s', end='')
+                        print(f'epoch: {self.epoch_counter}', end='')
+                        print(f'\t time elapsed: {self.time_elapsed: 1.3f} s', end='')
                         print(f'\t wind dir: {self.current_wind_dir:3.0f} deg', end='')
-                        print(f'\t fly yaw: {np.rad2deg(self.fly_heading):3.0f} deg')
-                        #print(f'\t time step: {self.time_step:3.6f} s')
+                        print(f'\t bar pos: {self.current_bar_pos:3.0f} deg')
 
-                    if self.time_elapsed > self.experiment_time:
-                        self.done = True
-                        break
+                    #if self.time_elapsed > self.experiment_time:
+                    #    self.done = True
+                    #    break
 
             # go back to 0 deg at the end of the trial            
             arduino_str = "H " + str(0) + "\n"  # "H is a command used in the Arduino code to indicate heading
