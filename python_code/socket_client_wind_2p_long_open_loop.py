@@ -43,8 +43,8 @@ class SocketClient(object):
         self.print = True  # for printing the current values on the console
 
         # specify the time epochs in the experiment
-        self.time_baseline = 10 # 40  # [s] baseline period when the wind is off
-        self.epoch_dur = 30 # 240  # [s] duration of an individual epoch
+        self.time_baseline = 40  # [s] baseline period when the wind is off
+        self.epoch_dur = 240  # [s] duration of an individual epoch
         self.epoch_num = 4  # total number of epochs
 
         # set voltage range for Phidget
