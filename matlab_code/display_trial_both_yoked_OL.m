@@ -61,7 +61,6 @@ subplot(viz_figs.stim_ax);
 plot(t, stim_pos_panel_x, 'c');
 hold on
 plot(t, stim_pos_motor, 'm');
-ylim([-180 180]);
 xlim([0 trial_time(end)]);
 set(gca, 'ytick', 0:90:360)
 title('Stimulus position');
