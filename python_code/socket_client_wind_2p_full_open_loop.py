@@ -43,9 +43,8 @@ class SocketClient(object):
         self.print = True  # for printing the current values on the console
 
         # specify the time epochs in the experiment
-        self.time_baseline = 40  # [s] baseline period when the wind is off
-        self.epoch_dur = 240  # [s] duration of an individual epoch
-        self.epoch_num = 4  # total number of epochs
+        self.epoch_dur = 10  # [s] duration of an individual epoch
+        self.epoch_num = 6  # total number of epochs
 
         # set voltage range for Phidget
         self.aout_max_volt = 10.0
@@ -218,11 +217,6 @@ class SocketClient(object):
                     self.intx = float(toks[20])  # integrated x position (rad) of the sphere in lab coord neglecting heading
                     self.inty = float(toks[21])  # integrated y position (rad) of the sphere in lab coord neglecting heading
                     self.timestamp = float(toks[22])  # frame capture time (ms) since epoch
-
-                    if self.time_elapsed < self.time_baseline:
-                        self.aout_wind_valve.setVoltage(0.0)  # turn the wind off during the baseline period
-                    else:
-                        self.aout_wind_valve.setVoltage(5.0)  # turn the wind on during the rest of the trial
                     
                     self.time_step = (time.time()-self.time_end)  # difference between now and the previous time step [s]
                     if self.turn_type == 'clockwise':
