@@ -61,7 +61,7 @@ elseif strcmp(task, 'panels_Closed_Loop_X_Closed_Loop_Y_wind_Closed_Loop') == 1
 elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
     closedLoop(run_obj.pattern_number, start_x, start_y);
 elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1
-    closedLoop(run_obj.pattern_number, start_x, start_y);  % use closedLoop so that panel is synced with motor
+    closedLoop(run_obj.pattern_number, start_x, start_y);  % using closedLoop so that open-loop panel is synced with motor
 elseif strcmp(task, 'panels_Open_Loop_wind_Closed_Loop') == 1 % useful to have static wind (gain=0) and open-loop bar
     openLoop(run_obj.pattern_number, run_obj.function_number);
 else
@@ -111,6 +111,8 @@ elseif strcmp(run_obj.experiment_type,'Gain_change')==1
     disp('Trial type not ready!')
 elseif strcmp(run_obj.experiment_type, 'TO_long_open_loop') == 1
     system(['python.exe run_socket_client_wind_2p_long_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.stim_speed) ' ' run_obj.turn_type.Value ' ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
+elseif strcmp(run_obj.experiment_type, 'TO_full_open_loop') == 1
+    system(['python.exe run_socket_client_wind_2p_full_open_loop.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.stim_speed) ' ' run_obj.turn_type.Value ' ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']);
 end
 
 delay = 1.0; % (s) wait before acquiring as the initial few seconds of Arduino signal is garbage

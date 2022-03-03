@@ -43,6 +43,7 @@ class SocketClient(object):
         self.print = True  # for printing the current values on the console
 
         # specify the time epochs in the experiment
+        self.time_baseline = 10  # [s] baseline period
         self.epoch_dur = 10  # [s] duration of an individual epoch
         self.epoch_num = 6  # total number of epochs
 
@@ -227,7 +228,18 @@ class SocketClient(object):
                     self.time_end = time.time()  # save the current time step
                     
                     # prepare the outputs based on the epoch
-                    if self.epoch_counter == 1:  # bar only
+                    if self.time_elapsed < self.time_baseline:
+                        self.epoch_counter = 0
+                    else:
+                        self.epoch_counter = ((self.time_elapsed - self.time_baseline) // self.epoch_dur) + 1
+
+                    if self.epoch_counter == 0:  # baseline
+                        wind_voltage = 0.0  # wind off
+                        self.current_wind_dir = 0  # wind tube stationary at 0 deg
+                        y_dim_voltage = 5.0  # bar off                        
+                        self.current_bar_pos = 0
+
+                    elif self.epoch_counter == 1:  # bar only
                         wind_voltage = 0.0  # wind off
                         self.current_wind_dir = 0  # wind tube stationary at 0 deg
                         y_dim_voltage = 9.0  # bar on                        
@@ -269,26 +281,6 @@ class SocketClient(object):
                     # configure the outputs
                     self.aout_ydim.setVoltage(y_dim_voltage)
                     self.aout_wind_valve.setVoltage(wind_voltage)  # turn the wind off at the end of the trial   
-
-                    if self.time_elapsed < self.time_baseline:
-                        self.epoch_counter = 0
-                    else:
-                        self.epoch_counter = ((self.time_elapsed - self.time_baseline) // self.epoch_dur) + 1
-
-                    if self.epoch_counter == 0 or self.epoch_counter == 1 or self.epoch_counter == 3:  # both bar and wind in open loop
-                        self.current_wind_dir = self.stim_dir
-                        self.current_bar_pos = self.stim_dir
-
-                    elif self.epoch_counter == 2:
-                        self.current_wind_dir = 0  # wind stationary at 0 deg
-                        self.current_bar_pos = self.stim_dir
-                    
-                    elif self.epoch_counter == 4:
-                        self.current_wind_dir = self.stim_dir
-                        self.current_bar_pos = 0
-                                        
-                    else:
-                        self.done = True  # end the experiment
 
                     # send the wind direction to Arduino
                     arduino_str = "H " + str(self.current_wind_dir) + "\n"  # "H is a command used in the Arduino code to indicate heading
@@ -338,10 +330,6 @@ class SocketClient(object):
                         print(f'\t time elapsed: {self.time_elapsed: 1.3f} s', end='')
                         print(f'\t wind dir: {self.current_wind_dir:3.0f} deg', end='')
                         print(f'\t bar pos: {self.current_bar_pos:3.0f} deg')
-
-                    #if self.time_elapsed > self.experiment_time:
-                    #    self.done = True
-                    #    break
 
             # go back to 0 deg at the end of the trial            
             arduino_str = "H " + str(0) + "\n"  # "H is a command used in the Arduino code to indicate heading

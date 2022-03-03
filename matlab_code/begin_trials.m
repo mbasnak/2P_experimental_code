@@ -84,7 +84,7 @@ for i = 1:task_cnt
         [trial_bdata, trial_time] = run_empty_trial(i, cur_task, run_obj, scanimage_client_skt, cur_trial_corename );
         [fwd_histogram, ang_histogram, fly_pos_histogram] = display_trial(session_id, i-1, run_obj, trial_time, trial_bdata, session_fig,fwd_histogram, ang_histogram, fly_pos_histogram);
               
-        %If running both
+    %we might not need this else below
     else
         cur_task = ['panels_' run_obj.panels_mode '_wind_' run_obj.wind_mode];
         cur_trial_corename = [cur_task '_' datestr(now, 'yyyymmdd_HHMMSS') '_sid_' num2str(session_id) '_tid_' num2str(i-1)];
