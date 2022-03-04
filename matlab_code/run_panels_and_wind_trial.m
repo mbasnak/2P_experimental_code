@@ -61,7 +61,11 @@ elseif strcmp(task, 'panels_Closed_Loop_X_Closed_Loop_Y_wind_Closed_Loop') == 1
 elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
     closedLoop(run_obj.pattern_number, start_x, start_y);
 elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1
-    closedLoop(run_obj.pattern_number, start_x, start_y);  % using closedLoop so that open-loop panel is synced with motor
+    if strcmp(run_obj.experiment_type, 'TO_full_open_loop') == 1
+        closedClosedLoop(run_obj.pattern_number, start_x, start_y); 
+    else
+        closedLoop(run_obj.pattern_number, start_x, start_y);  % using closedLoop so that open-loop panel is synced with motor
+    end
 elseif strcmp(task, 'panels_Open_Loop_wind_Closed_Loop') == 1 % useful to have static wind (gain=0) and open-loop bar
     openLoop(run_obj.pattern_number, run_obj.function_number);
 else
