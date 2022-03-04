@@ -151,7 +151,7 @@ end
 
 function openLoop(pattern, func)
 %% begins openLoop setting in panels
-if (func == 216 | func == 217)
+if (func == 216 || func == 217)
     freq = 25;
 else
     freq = 50;
@@ -187,7 +187,11 @@ end
 
 function closedClosedLoop(pattern, startPositionX,startPositionY)
 %% begins closedLoop setting in panels
-freq = 50;
+if (func == 216 || func == 217)
+    freq = 25;
+else
+    freq = 50;
+end
 Panel_com('stop');
 Panel_com('g_level_7');
 %set pattern number
