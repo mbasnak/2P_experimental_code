@@ -115,8 +115,6 @@ class SocketClient(object):
         self.aout_wind_valve.openWaitForAttachment(5000)
         self.aout_wind_valve.setVoltage(0.0)
 
-        breakpoint()
-
         # Set up socket info for connecting with the FicTrac
         self.HOST = '127.0.0.1'  # The (receiving) host IP address (sock_host)
         self.PORT = 65432         # The (receiving) host port (sock_port)
