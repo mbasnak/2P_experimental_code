@@ -44,7 +44,7 @@ class SocketClient(object):
 
         # specify the time epochs in the experiment
         self.time_baseline = 10  # [s] baseline period
-        self.epoch_dur = 10  # [s] duration of an individual epoch
+        self.epoch_dur = 200  # [s] duration of an individual epoch
         self.epoch_num = 6  # total number of epochs
 
         # set voltage range for Phidget
@@ -219,24 +219,24 @@ class SocketClient(object):
                     self.inty = float(toks[21])  # integrated y position (rad) of the sphere in lab coord neglecting heading
                     self.timestamp = float(toks[22])  # frame capture time (ms) since epoch
                     
-                    self.time_step = (time.time()-self.time_end)  # difference between now and the previous time step [s]
+                    self.time_step = time.time()-self.time_end  # difference between now and the previous time step [s]
                     if self.turn_type == 'clockwise':
                         self.stim_dir = (self.stim_dir + (self.time_step * self.stim_speed)) % 360
                     elif self.turn_type == 'counterclockwise':
                         self.stim_dir = (self.stim_dir - (self.time_step * self.stim_speed)) % 360
 
                     self.time_end = time.time()  # save the current time step
-                    
+
                     # prepare the outputs based on the epoch
                     if self.time_elapsed < self.time_baseline:
                         self.epoch_counter = 0
                     else:
-                        self.epoch_counter = ((self.time_elapsed - self.time_baseline) // self.epoch_dur) + 1
+                        self.epoch_counter = int(((self.time_elapsed - self.time_baseline) // self.epoch_dur) + 1)
 
                     if self.epoch_counter == 0:  # baseline
                         wind_voltage = 0.0  # wind off
                         self.current_wind_dir = 0  # wind tube stationary at 0 deg
-                        y_dim_voltage = 5.0  # bar off                        
+                        y_dim_voltage = 5.0  # bar off
                         self.current_bar_pos = 0
 
                     elif self.epoch_counter == 1:  # bar only
@@ -329,7 +329,8 @@ class SocketClient(object):
                         print(f'epoch: {self.epoch_counter}', end='')
                         print(f'\t time elapsed: {self.time_elapsed: 1.3f} s', end='')
                         print(f'\t wind dir: {self.current_wind_dir:3.0f} deg', end='')
-                        print(f'\t bar pos: {self.current_bar_pos:3.0f} deg')
+                        print(f'\t bar pos: {self.current_bar_pos:3.0f} deg', end='')
+                        print(f'\t y_dim: {y_dim_voltage:3.0f} V')
 
             # go back to 0 deg at the end of the trial            
             arduino_str = "H " + str(0) + "\n"  # "H is a command used in the Arduino code to indicate heading

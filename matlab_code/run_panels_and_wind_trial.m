@@ -62,7 +62,7 @@ elseif strcmp(task, 'panels_Closed_Loop_wind_Open_Loop') == 1
     closedLoop(run_obj.pattern_number, start_x, start_y);
 elseif strcmp(task, 'panels_Open_Loop_wind_Open_Loop') == 1
     if strcmp(run_obj.experiment_type, 'TO_full_open_loop') == 1
-        closedClosedLoop_TO(run_obj.pattern_number, start_x, start_y, run_obj.function_number); 
+        closedClosedLoop(run_obj.pattern_number, start_x, start_y);
     else
         closedLoop(run_obj.pattern_number, start_x, start_y);  % using closedLoop so that open-loop panel is synced with motor
     end
@@ -192,25 +192,6 @@ Panel_com('stop');
 Panel_com('g_level_7');
 %set pattern number
 Panel_com('set_pattern_id', pattern);
-%set closed loop for x and y
-Panel_com('set_mode', [3, 3]);
-Panel_com('set_position', [startPositionX, startPositionY]);
-%quiet mode on
-Panel_com('quiet_mode_on');
-end
-
-function closedClosedLoop_TO(pattern, startPositionX, startPositionY, func)
-%% begins closedLoop setting in panels
-if (func == 216 || func == 217)
-    freq = 25;
-else
-    freq = 50;
-end
-Panel_com('stop');
-Panel_com('g_level_7');
-%set pattern number
-Panel_com('set_pattern_id', pattern);
-Panel_com('set_funcX_freq' , freq);
 %set closed loop for x and y
 Panel_com('set_mode', [3, 3]);
 Panel_com('set_position', [startPositionX, startPositionY]);
