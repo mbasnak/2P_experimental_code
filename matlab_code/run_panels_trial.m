@@ -69,6 +69,8 @@ elseif (strcmp(run_obj.experiment_type,'Gain_change')==1)
     system(['python run_socket_client_gain_change.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']); 
 elseif (strcmp(run_obj.experiment_type,'Stimulus_jump')==1)
     system(['python run_socket_client_bar_jump.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' ' 1 &']); 
+elseif strcmp(run_obj.experiment_type, 'Cue_disappears') == 1
+    system(['python.exe run_socket_client_cue_disappears.py ' num2str(run_obj.experiment_type) ' ' num2str(run_obj.trial_t) ' "' hdf_file '" ' num2str(run_obj.start_pos_x) ' ' num2str(run_obj.gain_panels) ' ' num2str(run_obj.gain_wind) ' 1 &']);
 end
 %Start the data acquisition
 [trial_data, trial_time] = s.startForeground(); %gets data and timestamps for the NiDaq acquisition
@@ -134,16 +136,16 @@ Panel_com('set_position', [startPositionX,startPositionY]);
 Panel_com('quiet_mode_on');
 end
 
-function closedClosedLoop(pattern, startPosition)
+function closedClosedLoop(pattern, startPositionX,startPositionY)
 %% begins closedLoop setting in panels
-freq = 50;
+freq = 50;  % This doesn't seemed to be used (TO).
 Panel_com('stop');
 Panel_com('g_level_7');
 %set pattern number
 Panel_com('set_pattern_id', pattern);
 %set closed loop for x and y
 Panel_com('set_mode', [3, 3]);
-Panel_com('set_position', [1, startPosition]);
+Panel_com('set_position', [startPositionX, startPositionY]);
 %quiet mode on
 Panel_com('quiet_mode_on');
 end
