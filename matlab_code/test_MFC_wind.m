@@ -18,6 +18,7 @@ flow_rate = 0.2 ; % [L/min] make sure the air is turned on!
 %%% forget to turn it back on though.
 
 %% setup DAQ
+disp('setup DAQ')
 set_up = '2P-room';
 s = setup_nidaq(set_up);
 settings = nidaq_settings;
@@ -42,7 +43,20 @@ MFC_trigger(1) = 0;
 MFC_trigger(end) = 0;
 output_data = [MFC_flow, imaging_trigger, MFC_trigger];
 queueOutputData(s, output_data);
+
+%%
+duration = size(output_data, 1) / SAMPLING_RATE;
+
+%% run a Python code to keep the MFC on
+cd('C:\Users\WilsonLab\Desktop\FicTrac_Experiments\2P_experimental_code\python_code')
+system(['python run_MFC.py ', num2str(duration), ' 1 &']);
+system('exit');
+
+%% start
 [output,time] = s.startForeground();
+
+%%
+
 
 %%
 if false
