@@ -13,7 +13,7 @@ import random
 import math
 
 
-class SocketClientCueDisappears(object):
+class SocketClientCueDisappearsNoJumps(object):
 
     DefaultParam = {
         'experiment': 1,
@@ -43,9 +43,8 @@ class SocketClientCueDisappears(object):
 
         # Set up Phidget serial numbers for using two devices
         self.phidget_vision = 525577  # written on the back of the Phidget
-        self.phidget_heading = 589946
 
-        # Setup analog output y dim, to change the y dimension of the stimulus
+        # Setup analog output YAW
         self.aout_ydim = VoltageOutput()
         self.aout_ydim.setDeviceSerialNumber(self.phidget_vision)
         self.aout_ydim.setChannel(self.aout_channel_ydimension)
@@ -73,17 +72,6 @@ class SocketClientCueDisappears(object):
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(9.0)
 
-        # Set up Phidget channels in device 2 to save the heading 
-        self.aout_heading_channel = 1
-
-        # Setup analog output motor
-        self.aout_heading = VoltageOutput()
-        self.aout_heading.setDeviceSerialNumber(self.phidget_heading)
-        self.aout_heading.setChannel(self.aout_heading_channel)
-        self.aout_heading.openWaitForAttachment(5000)
-        self.aout_heading.setVoltage(0.0)
-
-
         self.print = True
 
         # Set up socket info
@@ -100,12 +88,8 @@ class SocketClientCueDisappears(object):
         self.gain_yaw = 1
         self.heading_with_gain = 0
 
-        self.bar_jump = True
-        self.bar_jump_size = 0
-
         #initialize the bar on
         self.bar = True
-        self.bar_moving = True
 
         #define times when bar will be turned off
         self.turn_off_times = np.linspace(900,3525,26)
@@ -206,33 +190,17 @@ class SocketClientCueDisappears(object):
                                 2 * np.pi)
                     self.aout_y.setVoltage(output_voltage_y)
 
-
-                    #At the right intervals, stop the stimulus and turn it off
-                    if ((math.floor(self.time_elapsed) in self.turn_off_times) and (self.bar == True) and (self.bar_moving == True)):
+                    #At the right intervals, turn off the stimulus
+                    if ((math.floor(self.time_elapsed) in self.turn_off_times) and (self.bar == True)):
                         self.bar = False
-                        self.bar_moving = False
-                        self.bar_jump = True    #resetting bar jump
 
                     #At the right intervals, make the stimulus jump 90 deg from its previous position and turn it on
-                    if ((math.floor(self.time_elapsed - 15) in self.turn_off_times) and (self.bar == False) and (self.bar_moving == False) and (self.bar_jump == True)):
-                        self.bar_moving = True
+                    if ((math.floor(self.time_elapsed - 15) in self.turn_off_times) and (self.bar == False) ):
                         self.bar = True 
-                        #self.bar_jump_size = random.choice([math.radians(-90),math.radians(90)])
-                        self.bar_jump_size = 0                       
-                        self.bar_jump = False
-                    else:
-                        self.bar_jump_size = 0
 
-                    if self.bar_moving == True:
-                        self.heading_with_gain = (self.heading_with_gain + self.deltaheading*self.gain_yaw + self.bar_jump_size) % (2*np.pi)
-
+                    self.heading_with_gain = (self.heading_with_gain + self.deltaheading*self.gain_yaw) % (2*np.pi)
                     output_voltage_yaw_gain = (self.heading_with_gain)*(self.aout_max_volt-self.aout_min_volt)/(2 * np.pi)
                     self.aout_yaw_gain.setVoltage(10-output_voltage_yaw_gain) 
-
-                    #store heading data
-                    output_voltage_heading = self.heading
-                    self.aout_heading.setVoltage(output_voltage_heading)
-
                           
                     if self.bar == False:
                         y_dim_voltage = 5.0
