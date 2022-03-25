@@ -1,4 +1,4 @@
-%%% function test_MFC_wind(PulseDur)
+%% function test_MFC_wind(PulseDur)
 %%% test the pinch valve used for closed-loop wind device
 %%% INPUTS:
 %%%     pulse_dur: duration of the pulse in sec
@@ -11,6 +11,11 @@
 %% parameters
 pulse_dur = 3; %[s]
 flow_rate = 0.2 ; % [L/min] make sure the air is turned on!
+
+%%% Note that the "flow off signal" is controlled via Phidget and not via
+%%% Matlab. If this channel is "floating" the MFC might not work. In that
+%%% case, disconnect the "flow off signal" while using this script. Don't
+%%% forget to turn it back on though.
 
 %% setup DAQ
 set_up = '2P-room';
