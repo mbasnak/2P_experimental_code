@@ -30,6 +30,7 @@ class SocketClientGainChange(object):
         self.experiment_time = self.param['experiment_time']
         self.time_start = time.time()
 
+        self.phidget_vision = 525577  # written on the back of the Phidget
 
         # Set up Phidget channels
         self.aout_channel_yaw = 0
@@ -41,24 +42,28 @@ class SocketClientGainChange(object):
 
         # Setup analog output YAW
         self.aout_yaw = VoltageOutput()
+        self.aout_yaw.setDeviceSerialNumber(self.phidget_vision)
         self.aout_yaw.setChannel(self.aout_channel_yaw)
         self.aout_yaw.openWaitForAttachment(5000)
         self.aout_yaw.setVoltage(0.0)
 
         # Setup analog output X
         self.aout_x = VoltageOutput()
+        self.aout_x.setDeviceSerialNumber(self.phidget_vision)
         self.aout_x.setChannel(self.aout_channel_x)
         self.aout_x.openWaitForAttachment(5000)
         self.aout_x.setVoltage(0.0)
 
         # Setup analog output YAW gain
         self.aout_yaw_gain = VoltageOutput()
+        self.aout_yaw_gain.setDeviceSerialNumber(self.phidget_vision)
         self.aout_yaw_gain.setChannel(self.aout_channel_yaw_gain)
         self.aout_yaw_gain.openWaitForAttachment(5000)
         self.aout_yaw_gain.setVoltage(0.0)
 
         # Setup analog output Y
         self.aout_y = VoltageOutput()
+        self.aout_y.setDeviceSerialNumber(self.phidget_vision)
         self.aout_y.setChannel(self.aout_channel_y)
         self.aout_y.openWaitForAttachment(5000)
         self.aout_y.setVoltage(0.0)

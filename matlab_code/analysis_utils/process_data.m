@@ -1,13 +1,17 @@
 %This code converts the panel and fictrac data to appropriate units and
 %calls on additional code to calculate velocities
 
-function [ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data( trial_time, trial_data, num_x_pixels)
+function [ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data( trial_time, trial_data, num_x_pixels,run_obj)
 
 %import acquisition settings
 settings = nidaq_settings;
 
 data.Intx = trial_data( :, settings.fictrac_x_DAQ_AI ); %data from x channel
-data.angularPosition = trial_data( :, settings.fictrac_yaw_gain_DAQ_AI ); 
+if run_obj.experiment_type == 'Gain_change'
+    data.angularPosition = trial_data( :, settings.fictrac_yaw_DAQ_AI );
+else
+    data.angularPosition = trial_data( :, settings.fictrac_yaw_gain_DAQ_AI );
+end
 data.Inty = trial_data( :, settings.fictrac_y_DAQ_AI );
 
 %Get filtered position and velocity data 

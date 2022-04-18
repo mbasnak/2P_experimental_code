@@ -7,7 +7,7 @@ settings = nidaq_settings;
 %% get fly position and velocity, as well as stim position
 
 x_pixels = 96; %= number of x dimensions in the panels (i.e., 96 pixels for the 360 arena)
-[ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data( trial_time, trial_data, x_pixels); 
+[ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data( trial_time, trial_data, x_pixels, run_obj); 
 
 
 %% Display trial results
