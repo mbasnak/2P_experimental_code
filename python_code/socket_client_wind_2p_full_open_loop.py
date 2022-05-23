@@ -44,7 +44,7 @@ class SocketClient(object):
 
         # specify the time epochs in the experiment
         self.time_baseline = 10  # [s] baseline period
-        self.epoch_dur = 20  # [s] duration of an individual epoch
+        self.epoch_dur = 200  # [s] duration of an individual epoch
         self.epoch_num = 6  # total number of epochs
 
         # set voltage range for Phidget
