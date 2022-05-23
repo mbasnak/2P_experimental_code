@@ -7,7 +7,7 @@ function [ t, stim_pos, vel_for, vel_yaw, fly_pos] = process_data( trial_time, t
 settings = nidaq_settings;
 
 data.Intx = trial_data( :, settings.fictrac_x_DAQ_AI ); %data from x channel
-if run_obj.experiment_type == 'Gain_change'
+if (strcmp(run_obj.experiment_type, 'Gain_change') == 1)
     data.angularPosition = trial_data( :, settings.fictrac_yaw_DAQ_AI );
 else
     data.angularPosition = trial_data( :, settings.fictrac_yaw_gain_DAQ_AI );

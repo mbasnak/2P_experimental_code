@@ -10,7 +10,7 @@
 
 %% parameters
 pulse_dur = 3; %[s]
-flow_rate = 0.2 ; % [L/min] make sure the air is turned on!
+flow_rate = 0.2; % [L/min] make sure the air is turned on!
 
 %%% Note that the "flow off signal" is controlled via Phidget and not via
 %%% Matlab. If this channel is "floating" the MFC might not work. In that

@@ -44,7 +44,7 @@ class SocketClient(object):
 
         # specify the time epochs in the experiment
         self.time_baseline = 10  # [s] baseline period
-        self.epoch_dur = 200  # [s] duration of an individual epoch
+        self.epoch_dur = 20  # [s] duration of an individual epoch
         self.epoch_num = 6  # total number of epochs
 
         # set voltage range for Phidget
@@ -265,7 +265,8 @@ class SocketClient(object):
                     
                     elif self.epoch_counter == 5:  # both rotating in sync
                         wind_voltage = 5.0  # wind on
-                        self.current_wind_dir = self.stim_dir
+                        self.current_wind_dir = 360 - self.stim_dir  # two cues rotate in opposite directions
+                        # self.current_wind_dir = self.stim_dir
                         y_dim_voltage = 9.0  # bar on
                         self.current_bar_pos = self.stim_dir
                     
